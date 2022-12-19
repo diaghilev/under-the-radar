@@ -1,0 +1,5 @@
+# Configuration file
+config.ini
+
+# Environment
+venv/
