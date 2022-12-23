@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "modular-terra-372321",
+  "private_key_id": "b64fb766c51dad4aa9994221352b8352afff2d2c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDjLOH+NT3GkAgF\nemp3J1FGtT5SNaIjPSRsMM8U8ynC9JiTF2QKdjvmfoGOJMr87OIh2+Y8c+Ct9KvO\nCErxUy0xGgN13T3f1KLtVImiYTEFaQLz4z6s8/Df5n+3xjOYG9wAykeoIiKUOHUE\n4ledp5KWCy6SET9hiP75SxFeCOYMjzgLi1Id01p+KwpynCfS0Dvb4806j0AlZ4j6\nEVpCxjeHoQ1oRa9PTl/hB06Bb6hpF2DUhvlUYuc/qQLdZVAY+yFcMwJOWs4W9VGK\ngwJQbuIH1CBT7DVmUYYGwPzkrzvILby0nXPQn0l1tV3ths70N2OEYIrVqcPz5qB6\n1BVtYijxAgMBAAECggEAKPwOc43IbNvMTqy0q3WA8Mg/C5bYfxIHUauGmKl79cuq\nARN9vXNyQBW/qtTReEsGSwSAp5RiSw/ytPODDcGrTAn86NU21fxnPnj7cbumG+tD\nmJt9Ubea09IiZZXQ9hbEnLHhtqAd6+65kd2B4BP82qv+xWRuMlsEYRZddkEVu9r9\nxfHQCAMb9msL8RfLn4Hp7MSAdE543kJSoX+8dCI6NxSkFThyUW230js6NsdRG9Av\nXdHA7lKVhVx5lfwD/zyWE1Ku6BFw3jN+uav5CE6tgHk7UUVyFKYleuxKMw8SkqxM\nSGvBZx9Q715LzCmsIbDB8O7tennybZqfG1UFlgO9zwKBgQDxvyUij9rRvUkX+sNO\nLT3LkYCh3wAM1zvGvzPYo/gicYEq2CgNshxO+McDdEWjo9Z1tNw0+10yuPfwtz6j\nNGQktl6AkpAFNZb47sL/Kh0zzvMHY3V6KdbZn9R3fmywbpmK/dsPm1zJf1tp6+Ms\nJNvcWkcx14bk7sNGYTpW+4rOfwKBgQDwkc1YpISkvOB3jwfwKz0T8RYNO7uaveag\nfU6CESexDGfwSw6Ee/hZB8v4V2hQM9r9HcJUXO4brS2GzIg3k/p1lfmzGB5iNxzU\nUrme38imhY3XB/uXCxCb/Q02cEom7zTXNGSfD23pE+lyY4nXoexzkMDFpLzRR+lB\ncIpiPV8wjwKBgAJwMBqyIr3cz+DrCY8/S5FDDW4UhraacSLnCMnVlYobZPceqQDC\nXCC7x54UTSOCYoZbZaEvK9h4HyARaRNSUvQ/1qIrWEKFMNmf5t2V+idsnezkJuot\ng9o8D3OJFeWNqATL3KrCoWPy4eQmmer3EDSfwHoTN2wVsGiEUIdSECtXAoGBAK8s\n3GSR1+zFhIZK5rLiKWWeBjq4plF1urxewo4/w7FOoVj+rqGWTC84WDSMIW9Vcz8h\nLmKUEOaiYiZoRUCDRrvc66iYBXfrPdj2LCgeOFPZqIFOVMuVyRBtYfOkLLrRMJ8M\njcCtUZGJaFJdXQBh7nXwkA7beIrEXHvEYWBL5EbNAoGAEOhF/ERy26deJ8bFX7KE\nP4abYsOtrP56JCL6apkM1aY1IThOgtihFNN4yExF3KA22G5FHTdWuBd90YNJHrYY\nY/jX7CgsZqTCinXg1h0McX22lRVQ+BOYojiHBNaBFv1qSlsCSPAwUAF0XCnNcbrw\nU6Vv/GCaCAtKaUqCYU3r0fE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "tweets-service-account@modular-terra-372321.iam.gserviceaccount.com",
+  "client_id": "117106224282755492649",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/tweets-service-account%40modular-terra-372321.iam.gserviceaccount.com"
+}
