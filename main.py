@@ -51,33 +51,53 @@ import time
 
 #####
 
+# Import google cloud packages
+from google.cloud import bigquery
+from google.cloud.exceptions import NotFound
+
+# Set google application credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
+
+# Construct BigQuery client object
+client = bigquery.Client() 
+
+# Set dataset_id to the ID of the dataset to create.
+dataset_id = "{}.tweets_dataset".format(client.project)
+
+# Construct a full Dataset object to send to the API.
+dataset = bigquery.Dataset(dataset_id)
+
+# Specify the geographic location where the dataset should reside.
+dataset.location = "US"
+
+# Create dataset if none exists
 def create_dataset():
 
-   # Import google cloud packages
-   from google.cloud import bigquery
-   from google.cloud.exceptions import NotFound
+   # Check if dataset exists. If not, send the dataset to the API for creation 
+   try:
+      client.get_dataset(dataset_id) #API request
+      print("Dataset exists")
+   except NotFound:
+      dataset = client.create_dataset(dataset, timeout=30)  # API request.
+      print("Dataset created")
 
-   # Set google application credentials
-   os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
+# Create table if none exists
+def create_table():
 
-   # Construct BigQuery client object
-   client = bigquery.Client() 
+   table_ref = dataset.table("tweets_table")
+   table = bigquery.Table(table_ref)
 
-   # Set dataset_id to the ID of the dataset to create.
-   dataset_id = "{}.tweets_dataset".format(client.project)
-
-   # Construct a full Dataset object to send to the API.
-   dataset = bigquery.Dataset(dataset_id)
-
-   # Specify the geographic location where the dataset should reside.
-   dataset.location = "US"
-
-   # Send the dataset to the API for creation 
-   dataset = client.create_dataset(dataset, timeout=30)  # API request.
-   print("Created dataset")
+   # Check if table exists. If not, create table
+   try:
+      client.get_table(table) #API request
+      print("Table exists")
+   except NotFound:
+      table = client.create_table(table)
+      print("Table created")
 
 if __name__ == '__main__':
     create_dataset()
+    create_table()
 
 # create table in bigquery 
 # set schema
