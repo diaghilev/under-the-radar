@@ -3,3 +3,6 @@ config.ini
 
 # Environment
 venv/
+
+# Google Application Credentials file
+apikey.json
