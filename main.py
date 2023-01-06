@@ -6,48 +6,47 @@ import configparser
 import requests
 import json
 import os
+import time
 
 # packages up for deletion
 import pandas as pd
-import pprint
-import time
 
-# # read configs
-# config = configparser.ConfigParser()
-# config.read('config.ini')
+# read configs
+config = configparser.ConfigParser()
+config.read('config.ini')
 
-# # set up authentication
-# api_key = config['twitter']['api_key']
-# api_key_secret = config['twitter']['api_key_secret']
-# access_token = config['twitter']['access_token']
-# access_token_secret = config['twitter']['access_token_secret']
+# set up authentication
+api_key = config['twitter']['api_key']
+api_key_secret = config['twitter']['api_key_secret']
+access_token = config['twitter']['access_token']
+access_token_secret = config['twitter']['access_token_secret']
 
-# client = tweepy.Client(
-#    consumer_key= api_key,
-#    consumer_secret= api_key_secret,
-#    access_token= access_token,
-#    access_token_secret= access_token_secret,
-#    return_type = requests.Response #may be potential to just return a dict straight away
-# )
+client = tweepy.Client(
+   consumer_key= api_key,
+   consumer_secret= api_key_secret,
+   access_token= access_token,
+   access_token_secret= access_token_secret,
+   return_type = requests.Response #may be potential to just return a dict straight away
+)
 
-# # define query
-# query = 'analytics engineer #hiring' #query = 'context:66.961961812492148736 lang:en #hiring #remote data engineer'
+# define query
+query = 'analytics engineer #hiring' #query = 'context:66.961961812492148736 lang:en #hiring #remote data engineer'
 
-# tweets = client.search_recent_tweets(
-#    query=query,
-#    #tweet_fields=['author_id','created_at','geo','lang','context_annotations'],
-#    max_results=10,
-#    user_auth=True
-# )
+tweets = client.search_recent_tweets(
+   query=query,
+   # tweet_fields=['id','text'],
+   max_results=10,
+   user_auth=True
+)
 
-# # convert result to dictionary
-# tweets_dict_full = tweets.json() 
-# tweets_dict = tweets_dict_full['data'] #extract "data" value from dict
+# convert result to dictionary
+tweets_dict_full = tweets.json() 
+tweets_dict = tweets_dict_full['data'] #extract "data" value from dict
 
-# # write to a JSONL file
-# with open("tweets.jsonl", "w") as f:
-#    for line in tweets_dict:
-#       f.write(json.dumps(line) + "\n")
+# write to a JSONL file
+with open("tweets.jsonl", "w") as f:
+   for line in tweets_dict:
+      f.write(json.dumps(line) + "\n") #Consider context management, see 2:11 of 'Upload Local JSON Files to BigQuery'
 
 #####
 
@@ -84,7 +83,8 @@ def create_dataset():
 # Create table if none exists
 def create_table():
 
-   table_ref = dataset.table("tweets_table")
+   # Construct table reference
+   table_ref = dataset.table("tweets_table_columns")
    table = bigquery.Table(table_ref)
 
    # Check if table exists. If not, create table
@@ -95,12 +95,31 @@ def create_table():
       table = client.create_table(table)
       print("Table created")
 
+   # Define table schema
+   job_config = bigquery.LoadJobConfig(
+      autodetect=True,
+      # schema=[
+      #    bigquery.SchemaField("edit_history_tweet_ids", "INT64"),
+      #    bigquery.SchemaField("id", "INT64"),
+      #    bigquery.SchemaField("text", "STRING"),
+      # ],
+      source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+      write_disposition='WRITE_APPEND' # {WRITE_TRUNCATE;WRITE_EMPTY}
+   )
+
+   # Upload JSONL to BigQuery
+   with open('tweets.jsonl', "rb") as source_file:
+      job = client.load_table_from_file(source_file, table, job_config=job_config)
+
+   while job.state != 'DONE':
+      job.reload()
+      time.sleep(2)
+   print(job.result())
+
 if __name__ == '__main__':
     create_dataset()
     create_table()
 
-# create table in bigquery 
-# set schema
-# load file to BigQuery
+
 
 
