@@ -8,47 +8,49 @@ import json
 import os
 import time
 
-# packages up for deletion
-import pandas as pd
 
-# read configs
-config = configparser.ConfigParser()
-config.read('config.ini')
+def ingest_tweets():
 
-# set up authentication
-api_key = config['twitter']['api_key']
-api_key_secret = config['twitter']['api_key_secret']
-access_token = config['twitter']['access_token']
-access_token_secret = config['twitter']['access_token_secret']
+   # read configs
+   config = configparser.ConfigParser()
+   config.read('config.ini')
 
-client = tweepy.Client(
-   consumer_key= api_key,
-   consumer_secret= api_key_secret,
-   access_token= access_token,
-   access_token_secret= access_token_secret,
-   return_type = requests.Response #may be potential to just return a dict straight away
-)
+   # set up authentication
+   api_key = config['twitter']['api_key']
+   api_key_secret = config['twitter']['api_key_secret']
+   access_token = config['twitter']['access_token']
+   access_token_secret = config['twitter']['access_token_secret']
 
-# define query
-query = 'analytics engineer #hiring' #query = 'context:66.961961812492148736 lang:en #hiring #remote data engineer'
+   client = tweepy.Client(
+      consumer_key= api_key,
+      consumer_secret= api_key_secret,
+      access_token= access_token,
+      access_token_secret= access_token_secret,
+      return_type = requests.Response #potential to return dict right away?
+   )
 
-tweets = client.search_recent_tweets(
-   query=query,
-   # tweet_fields=['id','text'],
-   max_results=10,
-   user_auth=True
-)
+   # define twitter search query
+   query = 'analytics engineer #hiring' #query = 'context:66.961961812492148736 lang:en'
 
-# convert result to dictionary
-tweets_dict_full = tweets.json() 
-tweets_dict = tweets_dict_full['data'] #extract "data" value from dict
+   tweets = client.search_recent_tweets(
+      query=query,
+      # tweet_fields=['id','text'],
+      max_results=10,
+      user_auth=True
+   )
 
-# write to a JSONL file
-with open("tweets.jsonl", "w") as f:
-   for line in tweets_dict:
-      f.write(json.dumps(line) + "\n") #Consider context management, see 2:11 of 'Upload Local JSON Files to BigQuery'
+   # convert result to dictionary (check this)
+   tweets_dict_full = tweets.json() 
+   tweets_dict = tweets_dict_full['data'] 
 
-#####
+   # write result to a JSONL file
+   filename = 'tweets.jsonl'
+
+   with open(filename, "w") as f:
+      for line in tweets_dict:
+         f.write(json.dumps(line) + "\n") #Consider context management, see 2:11 of 'Upload Local JSON Files to BigQuery'
+   
+   print("File created")
 
 # Import google cloud packages
 from google.cloud import bigquery
@@ -72,7 +74,7 @@ dataset.location = "US"
 # Create dataset if none exists
 def create_dataset():
 
-   # Check if dataset exists. If not, send the dataset to the API for creation 
+   # Check if dataset exists. If not, send dataset to the API for creation 
    try:
       client.get_dataset(dataset_id) #API request
       print("Dataset exists")
@@ -80,14 +82,15 @@ def create_dataset():
       dataset = client.create_dataset(dataset, timeout=30)  # API request.
       print("Dataset created")
 
+
 # Create table if none exists
-def create_table():
+def load_table():
 
    # Construct table reference
-   table_ref = dataset.table("tweets_table_columns")
+   table_ref = dataset.table("tweets_table")
    table = bigquery.Table(table_ref)
 
-   # Check if table exists. If not, create table
+   # Check if table exists. If not, create table.
    try:
       client.get_table(table) #API request
       print("Table exists")
@@ -117,8 +120,9 @@ def create_table():
    print(job.result())
 
 if __name__ == '__main__':
+    ingest_tweets()
     create_dataset()
-    create_table()
+    load_table()
 
 
 
