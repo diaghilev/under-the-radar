@@ -8,9 +8,11 @@ import json
 import os
 import time
 
-# define global query variable to pass between functions
+# define global variables to pass between functions
 query_global = ''
+dataset_global = ''
 
+# create function to get tweets
 def get_tweets(query):
 
    # read configs
@@ -45,6 +47,7 @@ def get_tweets(query):
    # function returns tweets
    return tweets
 
+# create function to put tweets in jsonl file 
 def to_file(filename):
 
    query = query_global
@@ -62,6 +65,59 @@ def to_file(filename):
    
    print("File created")
 
+# Import google cloud packages
+from google.cloud import bigquery
+from google.cloud.exceptions import NotFound
+
+# Set google application credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
+
+# Construct BigQuery client object
+client = bigquery.Client() 
+
+# Create dataset if none exists
+def create_dataset(dataset_name):
+
+    # Set dataset_id to the ID of the dataset to create.
+    dataset_id = "{}.{}".format(client.project, dataset_name)
+
+    # Construct a full Dataset object to send to the API.
+    dataset = bigquery.Dataset(dataset_id)
+
+    # Specify the geographic location where the dataset should reside.
+    dataset.location = "US"
+
+    # Create dataset if none exists
+    try:
+        client.get_dataset(dataset_id) 
+        print("Dataset exists")
+    except NotFound:
+        dataset = client.create_dataset(dataset, timeout=30)  
+        print("Dataset created")
+
+    # Update the dataset_global variable
+    global dataset_global
+    dataset_global = dataset
+
+# Create table if none exists
+def create_table(table_name):
+
+   # Construct table reference
+   global dataset_global
+   dataset = dataset_global
+   table_ref = dataset.table(table_name)
+   table = bigquery.Table(table_ref)
+
+   # Check if table exists. If not, create table.
+   try:
+      client.get_table(table) #API request
+      print("Table exists")
+   except NotFound:
+      table = client.create_table(table)
+      print("Table created")
+
 if __name__ == '__main__':
-    get_tweets('analytics engineer #hiring')
-    to_file('refactor.jsonl')
+    get_tweets(query='analytics engineer #hiring')
+    to_file(filename='refactor.jsonl')
+    create_dataset(dataset_name='tweets_dataset')
+    create_table(table_name='tweets_table')
