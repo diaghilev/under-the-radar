@@ -9,7 +9,6 @@ import os
 import time
 
 # define global variables to pass between functions
-query_global = ''
 dataset_global = ''
 
 # create function to get tweets
@@ -40,17 +39,11 @@ def get_tweets(query):
       user_auth=True
    )
 
-   # update the query_global variable
-   global query_global
-   query_global = query
-
    # function returns tweets
    return tweets
 
 # create function to put tweets in jsonl file 
-def to_file(filename):
-
-   query = query_global
+def to_file(filename, query):
 
    # convert result to dictionary (check this)
    tweets = get_tweets(query)
@@ -58,7 +51,6 @@ def to_file(filename):
    tweets_dict = tweets_dict_full['data'] 
 
    # write result to a JSONL file
-
    with open(filename, "w") as f:
       for line in tweets_dict:
          f.write(json.dumps(line) + "\n") #Consider context management
@@ -95,16 +87,13 @@ def create_dataset(dataset_name):
         dataset = client.create_dataset(dataset, timeout=30)  
         print("Dataset created")
 
-    # Update the dataset_global variable
-    global dataset_global
-    dataset_global = dataset
+    return dataset
 
 # Create table if none exists
-def create_table(table_name):
+def create_table(table_name, dataset_name):
 
    # Construct table reference
-   global dataset_global
-   dataset = dataset_global
+   dataset = create_dataset(dataset_name)
    table_ref = dataset.table(table_name)
    table = bigquery.Table(table_ref)
 
@@ -118,6 +107,6 @@ def create_table(table_name):
 
 if __name__ == '__main__':
     get_tweets(query='analytics engineer #hiring')
-    to_file(filename='refactor.jsonl')
+    to_file(filename='refactor.jsonl', query='analytics engineer #hiring')
     create_dataset(dataset_name='tweets_dataset')
-    create_table(table_name='tweets_table')
+    create_table(table_name='tweets_table', dataset_name='tweets_dataset')
