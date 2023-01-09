@@ -8,8 +8,8 @@ import json
 import os
 import time
 
-
-def ingest_tweets():
+# create function to get tweets
+def get_tweets(query):
 
    # read configs
    config = configparser.ConfigParser()
@@ -26,31 +26,33 @@ def ingest_tweets():
       consumer_secret= api_key_secret,
       access_token= access_token,
       access_token_secret= access_token_secret,
-      return_type = requests.Response #potential to return dict right away?
+      return_type = requests.Response 
    )
-
-   # define twitter search query
-   query = 'analytics engineer #hiring' #query = 'context:66.961961812492148736 lang:en'
 
    tweets = client.search_recent_tweets(
       query=query,
-      # tweet_fields=['id','text'],
+      # tweet_fields=[customize results here when desired], 
       max_results=10,
       user_auth=True
    )
 
+   # function returns tweets
+   return tweets
+
+# create function to put tweets in jsonl file 
+def to_file(filename, query):
+
    # convert result to dictionary (check this)
+   tweets = get_tweets(query)
    tweets_dict_full = tweets.json() 
    tweets_dict = tweets_dict_full['data'] 
 
    # write result to a JSONL file
-   filename = 'tweets.jsonl'
-
    with open(filename, "w") as f:
       for line in tweets_dict:
-         f.write(json.dumps(line) + "\n") #Consider context management, see 2:11 of 'Upload Local JSON Files to BigQuery'
+         f.write(json.dumps(line) + "\n") #Consider context management
    
-   print("File created")
+   print("File updated: {}".format(filename))
 
 # Import google cloud packages
 from google.cloud import bigquery
@@ -62,48 +64,53 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/
 # Construct BigQuery client object
 client = bigquery.Client() 
 
-# Set dataset_id to the ID of the dataset to create.
-dataset_id = "{}.tweets_dataset".format(client.project)
-
-# Construct a full Dataset object to send to the API.
-dataset = bigquery.Dataset(dataset_id)
-
-# Specify the geographic location where the dataset should reside.
-dataset.location = "US"
-
 # Create dataset if none exists
-def create_dataset():
+def create_dataset(dataset_name):
 
-   # Check if dataset exists. If not, send dataset to the API for creation 
-   try:
-      client.get_dataset(dataset_id) #API request
-      print("Dataset exists")
-   except NotFound:
-      dataset = client.create_dataset(dataset, timeout=30)  # API request.
-      print("Dataset created")
+    # Set dataset_id to the ID of the dataset to create.
+    dataset_id = "{}.{}".format(client.project, dataset_name)
 
+    # Construct a Dataset object to send to the API.
+    dataset = bigquery.Dataset(dataset_id)
+    dataset.location = "US"
+
+    # Create dataset if none exists
+    try:
+        client.get_dataset(dataset_id) 
+    except NotFound:
+        dataset = client.create_dataset(dataset, timeout=30)  
+        print("Dataset created: {}".format(dataset_id))
+
+    return dataset
 
 # Create table if none exists
-def load_table():
+def create_table(table_name, dataset_name):
 
    # Construct table reference
-   table_ref = dataset.table("tweets_table")
+   dataset = create_dataset(dataset_name)
+   table_ref = dataset.table(table_name)
    table = bigquery.Table(table_ref)
 
    # Check if table exists. If not, create table.
    try:
       client.get_table(table) #API request
-      print("Table exists")
    except NotFound:
       table = client.create_table(table)
-      print("Table created")
+      print("Table created: {}".format(table))
+
+# Load table from JSONL
+def load_table(table_name, dataset_name, filename):
+
+   # Construct table reference
+   dataset = create_dataset(dataset_name)
+   table = dataset.table(table_name)
 
    # Define table schema
    job_config = bigquery.LoadJobConfig(
       autodetect=True,
       # schema=[
-      #    bigquery.SchemaField("edit_history_tweet_ids", "INT64"),
-      #    bigquery.SchemaField("id", "INT64"),
+      #    bigquery.SchemaField("edit_history_tweet_ids", "INT"),
+      #    bigquery.SchemaField("id", "INT"),
       #    bigquery.SchemaField("text", "STRING"),
       # ],
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
@@ -111,18 +118,21 @@ def load_table():
    )
 
    # Upload JSONL to BigQuery
-   with open('tweets.jsonl', "rb") as source_file:
+   with open(filename, "rb") as source_file:
       job = client.load_table_from_file(source_file, table, job_config=job_config)
 
    while job.state != 'DONE':
       job.reload()
       time.sleep(2)
-   print(job.result())
+   
+   print("Job completed: {}".format(job.result()))
 
 if __name__ == '__main__':
-    ingest_tweets()
-    create_dataset()
-    load_table()
+    get_tweets(query='analytics engineer #hiring')
+    to_file(filename='tweets.jsonl', query='analytics engineer #hiring')
+    create_dataset(dataset_name='tweets_dataset')
+    create_table(table_name='tweets_table', dataset_name='tweets_dataset')
+    load_table(table_name='tweets_table', dataset_name='tweets_dataset', filename='tweets.jsonl')
 
 
 

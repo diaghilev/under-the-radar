@@ -1,8 +1,11 @@
 # Configuration file
 config.ini
 
+# Google Application Credentials file
+apikey.json
+
 # Environment
 venv/
 
-# Google Application Credentials file
-apikey.json
+# IDE
+.idea/
