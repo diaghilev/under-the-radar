@@ -8,9 +8,6 @@ import json
 import os
 import time
 
-# define global variables to pass between functions
-dataset_global = ''
-
 # create function to get tweets
 def get_tweets(query):
 
@@ -97,6 +94,9 @@ def create_table(table_name, dataset_name):
    table_ref = dataset.table(table_name)
    table = bigquery.Table(table_ref)
 
+   print(table_ref)
+   print(table)
+
    # Check if table exists. If not, create table.
    try:
       client.get_table(table) #API request
@@ -105,8 +105,37 @@ def create_table(table_name, dataset_name):
       table = client.create_table(table)
       print("Table created")
 
+# Load table from JSONL
+def load_table(table_name, dataset_name, filename):
+
+   # Construct table reference
+   dataset = create_dataset(dataset_name)
+   table = dataset.table(table_name)
+
+   # Define table schema
+   job_config = bigquery.LoadJobConfig(
+      autodetect=True,
+      # schema=[
+      #    bigquery.SchemaField("edit_history_tweet_ids", "INT"),
+      #    bigquery.SchemaField("id", "INT"),
+      #    bigquery.SchemaField("text", "STRING"),
+      # ],
+      source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
+      write_disposition='WRITE_APPEND' # {WRITE_TRUNCATE;WRITE_EMPTY}
+   )
+
+   # Upload JSONL to BigQuery
+   with open(filename, "rb") as source_file:
+      job = client.load_table_from_file(source_file, table, job_config=job_config)
+
+   while job.state != 'DONE':
+      job.reload()
+      time.sleep(2)
+   print(job.result())
+
 if __name__ == '__main__':
     get_tweets(query='analytics engineer #hiring')
     to_file(filename='refactor.jsonl', query='analytics engineer #hiring')
-    create_dataset(dataset_name='tweets_dataset')
-    create_table(table_name='tweets_table', dataset_name='tweets_dataset')
+    create_dataset(dataset_name='refactor_dataset')
+    create_table(table_name='refactor_table', dataset_name='refactor_dataset')
+    load_table(table_name='refactor_table', dataset_name='refactor_dataset', filename='refactor.jsonl')
