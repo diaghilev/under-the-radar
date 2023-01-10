@@ -1,10 +1,10 @@
-## 25 Job Tweets a Day
+## 25 Job Tweets A Day
 
 ### Introduction
 
-The purpose of this project is to serve 25 fresh job-related tweets a day. 
+Option #1: The purpose of this project is to serve 25 fresh job-related tweets a day. 
 
-Possible Next Step: User input determines the query sent to Twitter API.
+Option #2: The purpose of this project is to serve job-related tweets based on user inputs.
 
 
 ### Project Files
@@ -26,9 +26,9 @@ Possible Next Step: User input determines the query sent to Twitter API.
 - **Ingestion** - Python script fetches data from the twitter API and saves to a JSONL file.
 - **Transformation** - Python (Next step: Possibly dbt)
 - **Storage** - Python script creates a dataset & table in BigQuery and loads the data there.
-- **Serving** - Looker Studio (Next step: Enable user inputs. Streamlit?) 
-- **Orchestration** - Cron (Is this sufficient?)
-- **Deployment** - ? Need to unpack this - what at minimum is good practice ?
+- **Reporting** - Looker Studio (Next step: Enable user inputs. Streamlit?) 
+- **Orchestration** - 
+- **Deployment** - 
 
 
 

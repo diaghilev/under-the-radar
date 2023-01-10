@@ -32,7 +32,7 @@ def get_tweets(query):
    tweets = client.search_recent_tweets(
       query=query,
       # tweet_fields=[customize results here when desired], 
-      max_results=25,
+      max_results=10,
       user_auth=True
    )
 
@@ -42,14 +42,14 @@ def get_tweets(query):
 # create function to put tweets in jsonl file 
 def to_file(filename, query):
 
-   # convert result to dict
-   tweets = get_tweets(query)
-   tweets_dict_all = tweets.json() 
-   tweets_dict = tweets_dict_all['data'] 
+   # convert tweets to dictionary and remove metadata
+   tweets_raw = get_tweets(query) #datatype is <class 'requests.models.Response'>
+   tweets_dict = tweets_raw.json() #datatype is <class 'dict'>
+   tweets = tweets_dict['data'] #datatype is <class 'list'>
 
    # write result to a JSONL file
    with open(filename, "w") as f:
-      for line in tweets_dict:
+      for line in tweets:
          f.write(json.dumps(line) + "\n") #Consider context management
    
    print("File updated: {}".format(filename))
@@ -88,8 +88,8 @@ def create_table(table_name, dataset_name):
 
    # Construct table reference
    dataset = create_dataset(dataset_name)
-   table_ref = dataset.table(table_name)
-   table = bigquery.Table(table_ref)
+   table_id = dataset.table(table_name)
+   table = bigquery.Table(table_id)
 
    # Check if table exists. If not, create table.
    try:
@@ -103,28 +103,27 @@ def load_table(table_name, dataset_name, filename):
 
    # Construct table reference
    dataset = create_dataset(dataset_name)
-   table = dataset.table(table_name)
+   table_id = dataset.table(table_name)
 
    # Define table schema
    job_config = bigquery.LoadJobConfig(
       autodetect=True,
       # schema=[
-      #    bigquery.SchemaField("edit_history_tweet_ids", "INT"),
-      #    bigquery.SchemaField("id", "INT"),
+      #    bigquery.SchemaField("edit_history_tweet_ids", "INT64"),
+      #    bigquery.SchemaField("id", "INT64"),
       #    bigquery.SchemaField("text", "STRING"),
       # ],
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-      write_disposition='WRITE_APPEND' # {WRITE_TRUNCATE;WRITE_EMPTY}
+      write_disposition='WRITE_TRUNCATE' # {WRITE_APPEND; WRITE_EMPTY}
    )
 
    # Upload JSONL to BigQuery
-   with open(filename, "rb") as source_file:
-      job = client.load_table_from_file(source_file, table, job_config=job_config)
+   with open(filename, "rb") as file:
+      job = client.load_table_from_file(file, table_id, job_config=job_config)
 
    while job.state != 'DONE':
       job.reload()
       time.sleep(2)
-   
    print("Job completed: {}".format(job.result()))
 
 if __name__ == '__main__':
@@ -133,6 +132,7 @@ if __name__ == '__main__':
     create_dataset(dataset_name='tweets_dataset')
     create_table(table_name='tweets_table', dataset_name='tweets_dataset')
     load_table(table_name='tweets_table', dataset_name='tweets_dataset', filename='tweets.jsonl')
+
 
 
 
