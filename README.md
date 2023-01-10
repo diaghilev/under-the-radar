@@ -6,19 +6,18 @@ The purpose of this project is to serve 25 fresh job-related tweets a day.
 
 Possible Next Step: User input determines the query sent to Twitter API.
 
-Link here: [Put link here] 
 
 ### Project Files
-- app
-    - main.py - The main ETL script.
-        - Fetches data from the Twitter API
-        - Saves data to a JSONL file
-        - Creates dataset & table in BigQuery
-        - Loads the data to BigQuery
-    - tweets.jsonl - The JSONL file that stores tweets.
-    - apikey.json - Stores Google Cloud credentials (not version controlled)
-    - config.ini - Stores Twitter API credentials (not version controlled)
-    - Add files here.
+
+- main.py - The main ETL script.
+    - Fetches data from the Twitter API
+    - Saves data to a JSONL file
+    - Creates dataset & table in BigQuery
+    - Loads the data to BigQuery
+- tweets.jsonl - The JSONL file that stores tweets.
+- apikey.json - Stores Google Cloud credentials (not version controlled)
+- config.ini - Stores Twitter API credentials (not version controlled)
+
 
 ### Workflow
 
