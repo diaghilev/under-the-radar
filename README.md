@@ -15,17 +15,17 @@ The purpose of this project is to serve 25 job-related tweets a day using search
     - apikey.json - Stores Google Cloud credentials 
     - config.ini - Stores Twitter API credentials (not version controlled)
 
-    (To add: Any additional files such as metabase.db , dbt files, docker.yml etc)
+    - (To add: Any additional files such as dbt files, metabase.db , docker.yml etc.)
 
 ## Workflow
 
-Image
+**Diagram**
 
-Ingestion - Python script fetches data from the twitter API and saves to a JSONL file.
-Transformation - TBD (Either python or dbt. Format tweets for readability.)
-Storage - Python script creates a dataset & table in BigQuery and loads the data there.
-Serving - TBD 
-Orchestration - TBD
+- **Ingestion** - Python script fetches data from the twitter API and saves to a JSONL file.
+- **Transformation** - TBD (Either python or dbt. Format tweets for readability.)
+- **Storage** - Python script creates a dataset & table in BigQuery and loads the data there.
+- **Serving** - TBD 
+- **Orchestration** - TBD
 
 
 
