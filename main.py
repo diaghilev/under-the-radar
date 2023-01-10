@@ -42,10 +42,15 @@ def get_tweets(query):
 # create function to put tweets in jsonl file 
 def to_file(filename, query):
 
-   # convert result to dictionary (check this)
+   # convert result to dict
    tweets = get_tweets(query)
-   tweets_dict_full = tweets.json() 
-   tweets_dict = tweets_dict_full['data'] 
+   tweets_dict_all = tweets.json() 
+   tweets_dict = tweets_dict_all['data'] 
+
+   # print(tweets)
+   # print(type(tweets))
+   # print(tweets_dict_full)
+   # print(type(tweets_dict_full))
 
    # write result to a JSONL file
    with open(filename, "w") as f:
@@ -128,11 +133,11 @@ def load_table(table_name, dataset_name, filename):
    print("Job completed: {}".format(job.result()))
 
 if __name__ == '__main__':
-    get_tweets(query='analytics engineer #hiring')
+   #  get_tweets(query='analytics engineer #hiring')
     to_file(filename='tweets.jsonl', query='analytics engineer #hiring')
-    create_dataset(dataset_name='tweets_dataset')
-    create_table(table_name='tweets_table', dataset_name='tweets_dataset')
-    load_table(table_name='tweets_table', dataset_name='tweets_dataset', filename='tweets.jsonl')
+   #  create_dataset(dataset_name='tweets_dataset')
+   #  create_table(table_name='tweets_table', dataset_name='tweets_dataset')
+   #  load_table(table_name='tweets_table', dataset_name='tweets_dataset', filename='tweets.jsonl')
 
 
 
