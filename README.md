@@ -2,9 +2,7 @@
 
 ### Introduction
 
-Option #1: The purpose of this project is to serve 25 fresh job-related tweets a day. 
-
-Option #2: The purpose of this project is to serve job-related tweets based on user inputs.
+This project stemmed from a desire to find under-the-radar job postings on Twitter with an emphasis on contract, freelance and parttime roles. I built a data pipeline below to serve [Option 1: 25 fresh custom job-related tweets per day] [Option 2: job-related tweets based on user inputs].
 
 
 ### Project Files
@@ -24,9 +22,9 @@ Option #2: The purpose of this project is to serve job-related tweets based on u
 [Diagram of Workflow]
 
 - **Ingestion** - Python script fetches data from the twitter API and saves to a JSONL file.
-- **Transformation** - Python (Next step: Possibly dbt)
+- **Transformation** - [Python or dbt]
 - **Storage** - Python script creates a dataset & table in BigQuery and loads the data there.
-- **Reporting** - Looker Studio (Next step: Enable user inputs. Streamlit?) 
+- **Reporting** - [Streamlit, Looker Studio or Metabase]
 - **Orchestration** - 
 - **Deployment** - 
 

@@ -29,15 +29,14 @@ def get_tweets(query):
       return_type = requests.Response 
    )
 
-   tweets = client.search_recent_tweets(
+   tweets_raw = client.search_recent_tweets(
       query=query,
       # tweet_fields=[customize results here when desired], 
       max_results=10,
       user_auth=True
    )
 
-   # function returns tweets
-   return tweets
+   return tweets_raw
 
 # create function to put tweets in jsonl file 
 def to_file(filename, query):
