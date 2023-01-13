@@ -1,8 +1,8 @@
-## 25 Job Tweets A Day
+## Under the Radar Jobs
 
 ### Introduction
 
-This project stemmed from a desire to find under-the-radar job postings on Twitter with an emphasis on contract, freelance and parttime roles. I built a data pipeline below to serve [Option 1: 25 fresh custom job-related tweets per day] [Option 2: job-related tweets based on user inputs].
+This project stemmed from a desire to find under-the-radar job postings on Twitter with an emphasis on contract, freelance and parttime roles. I built an end-to-end data pipeline below to serve [Option 1: 25 fresh custom job-related tweets per day] [Option 2: job-related tweets based on user inputs].
 
 
 ### Project Files
