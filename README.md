@@ -21,8 +21,7 @@ The intent of this project is to build an end-to-end data pipeline that serves a
 
 Here's what I plan to build in dbt. This is sort of a DAG / ERD mash-up, hopefully that is not too confusing.
 
-![Image](transformation_plan.png)
-
+![Image](transformation.png)
 
 
 ### Outstanding Questions
