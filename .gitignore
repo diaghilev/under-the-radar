@@ -9,3 +9,8 @@ venv/
 
 # IDE
 .idea/
+.idea/workspace.xml
+
+# macOS
+.DS_Store
+
