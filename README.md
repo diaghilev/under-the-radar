@@ -9,13 +9,13 @@ Automate a search for contract/part-time data jobs using unstructured data sourc
 [Diagram of Architecture to come]
 
 - **Ingestion** 
-    [x] Python script fetches data from the twitter API and loads to a JSONL file.
-    [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
-[x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
-[ ] **Transformation** - dbt transforms source tables as described in 'Transformation' section, preparing them for a filterable reporting layer.
-[ ] **Reporting** - Looker Studio lists recent job posts/tweets in a filterable manner.
-[ ] **Orchestration** - Cron for once daily refresh of tweets data?
-[ ] **Deployment** - Docker 
+    - [x] Python script fetches data from the twitter API and loads to a JSONL file.
+    - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
+- [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
+- [ ] **Transformation** - dbt transforms source tables as described in 'Transformation' section, preparing them for a filterable reporting layer.
+- [ ] **Reporting** - Looker Studio lists recent job posts/tweets in a filterable manner.
+- [ ] **Orchestration** - Cron for once daily refresh of tweets data?
+- [ ] **Deployment** - Docker 
 
 ### Project Files
 (so far) 
