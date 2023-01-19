@@ -1,32 +1,30 @@
 ## Under the Radar Jobs
 
-### Introduction
+### Objective
 
-Automate a search for contract/part-time data jobs using unstructured data sources such as tweets and slack job channels.
+The intent of this project is to build an end-to-end data pipeline that serves a list of under-the-radar job announcements from unstructured data sources such as tweets and slack channels.
 
 ### Workflow
 
-[Diagram of Architecture to come]
-
 - **Ingestion** 
-    - [x] Python script fetches data from the twitter API and loads to a JSONL file.
+    - [x] Python script fetches job-related tweets from the twitter API and loads to a JSONL file.
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
-- [ ] **Transformation** - dbt transforms source tables as described in 'Transformation' section, preparing them for a filterable reporting layer.
-- [ ] **Reporting** - Looker Studio lists recent job posts/tweets in a filterable manner.
-- [ ] **Orchestration** - Cron for once daily refresh of tweets data?
+- [ ] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
+- [ ] **Reporting** - Looker Studio lists job announcements with filters for parttime and contract positions.
+- [ ] **Orchestration** - Once daily refresh of tweets data with (cron + google cloud functions?)
 - [ ] **Deployment** - Docker 
 
-### Project Files
-(so far) 
-
-- main.py - The main ETL script. (so far)
-    - Fetches data from the Twitter API
-    - Saves data to a JSONL file
-    - Creates dataset & table in BigQuery
-    - Loads the data to BigQuery
-- tweets.jsonl - The JSONL file that stores tweets.
-- apikey.json - Stores Google Cloud credentials (not version controlled)
-- config.ini - Stores Twitter API credentials (not version controlled)
-
 ### Transformation
+
+Here's what I plan to build in dbt. This is sort of a DAG / ERD mash-up, hopefully that is not too confusing.
+
+![Image](transformation_plan.png)
+
+
+
+### Outstanding Questions
+
+1. Docker is new to me and I won't fully understand it til I get my hands dirty. That said, do you see any obvious barriers to 'dockerizing' this pipeline? For example, I think slack access requires my personal login, and so I'm wondering if that's going to be a problem. 
+2. Is use of zapier for slack > sheets ingestion step frowned upon?
+3. Any other major issues you see that you'd encourage me to work on asap?
