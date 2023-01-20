@@ -17,17 +17,8 @@ The intent of this project is to build an end-to-end data pipeline that serves a
 - [ ] **Deployment** - Docker to containerize the pipeline.
 
 
-### Transformation
+### Next Step - Transformation
 
-Here's what I plan to build in dbt. This is sort of a DAG / ERD mash-up, hopefully that is not too confusing.
+Here's what I plan to build in dbt. 
 
 ![Image](transformations.png)
-
-
-### Outstanding Questions
-
-1. Docker is new to me and I won't fully understand it til I get my hands dirty. 
-     - a. That said, do you see any obvious barriers to 'dockerizing' this pipeline? In particular the slack > zapier > google sheets side of things
-     - b. Is docker's main purpose here to demonstrate that I can hand off my work to another person's machine? 
-2. Is use of zapier for slack > sheets ingestion step frowned upon? (I used it for now because it was a quick way to get a second source up and running)
-3. Any other major issues you see that you'd encourage me to work on first?
