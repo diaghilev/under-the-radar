@@ -31,7 +31,7 @@ def get_tweets(query):
 
    tweets_raw = client.search_recent_tweets(
       query=query,
-      # tweet_fields=[customize results here when desired], 
+      tweet_fields=["created_at"], #Add entities later to get urls, leads to nested json
       max_results=10,
       user_auth=True
    )
