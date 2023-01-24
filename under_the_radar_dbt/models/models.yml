@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: src_slack_jobs
+    columns:
+      - name: slack_id
+        description: "Primary key for this table, generated using the surrogate key macro from the dbt utils package."
+        tests:
+          - unique
+          - not_null
