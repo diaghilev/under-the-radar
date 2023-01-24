@@ -4,6 +4,11 @@ config.ini
 # Google Application Credentials file
 apikey.json
 
+# Bigquery - dbt Credentials file
+dbt_bq_serviceaccount.json
+under_the_radar_dbt/dbt_bq_serviceaccount.json
+dbt/dbt_bq_serviceaccount.json
+
 # Environment
 venv/
 
