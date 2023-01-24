@@ -129,8 +129,8 @@ if __name__ == '__main__':
     get_tweets(query='data engineer #hiring -is:retweet')
     to_file(filename='tweets.jsonl', query='data engineer #hiring -is:retweet')
     create_dataset(dataset_name='tweets_dataset')
-    create_table(table_name='tweets_table', dataset_name='tweets_dataset')
-    load_table(table_name='tweets_table', dataset_name='tweets_dataset', filename='tweets.jsonl')
+    create_table(table_name='raw_tweets', dataset_name='tweets_dataset')
+    load_table(table_name='raw_tweets', dataset_name='tweets_dataset', filename='tweets.jsonl')
 
 
 
