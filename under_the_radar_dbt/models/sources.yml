@@ -17,4 +17,4 @@ sources:
      
       - name: raw_slack_jobs 
         loaded_at_field: timestamp
-        description: Contains taw data from Slack, generated via zapier automation.
+        description: Contains raw data from Slack, generated via zapier automation.
