@@ -1,0 +1,17 @@
+version: 2
+
+exposures:  
+  - name: dashboard
+    label: Jobs Dashboard
+    url: coming soon
+    description: Filterable dashboard listing jobs from all sources (twitter, slack)
+    
+    type: dashboard
+    maturity: low
+    
+    depends_on:
+      - ref('dim_jobs')
+    
+    owner:
+      name: Lauren
+      email: lauren@email.com
