@@ -19,6 +19,12 @@ The intent of this project is to build an end-to-end data pipeline that serves a
 
 ### Next Step - Transformation
 
+Here's what I am currently building, as a DAG.
+
+![Image](img/dag.png)
+
 Here's what I plan to build in dbt. 
 
-![Image](transformations.png)
+![Image](img/transformations.png)
+
+
