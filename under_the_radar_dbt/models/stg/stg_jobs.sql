@@ -1,9 +1,9 @@
 WITH src_slack_jobs AS (
-  SELECT * FROM modular-terra-372321.tweets_dataset.src_slack_jobs
+  SELECT * FROM {{ ref('src_slack_jobs')}}
 ),
 
 src_twitter_jobs AS (
-  SELECT * FROM modular-terra-372321.tweets_dataset.src_twitter_jobs
+  SELECT * FROM {{ ref('src_twitter_jobs')}}
 )
 
 SELECT
