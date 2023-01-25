@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+
+  - name: bigquery
+    schema: tweets_dataset #equivalent to 'dataset' 
+    database: modular-terra-372321 #equivalent to 'project'
+
+    # freshness:
+    #   warn_after: {count: 24, period: hour}
+    #   error_after: {count: 48, period: hour}
+
+    tables:
+      - name: raw_twitter_jobs 
+        loaded_at_field: timestamp
+        description: Contains raw data from twitter API, generated via python script.
+     
+      - name: raw_slack_jobs 
+        loaded_at_field: timestamp
+        description: Contains taw data from Slack, generated via zapier automation.
