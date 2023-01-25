@@ -8,22 +8,22 @@ The intent of this project is to build an end-to-end data pipeline that serves a
 
 ### Workflow
 
-- **Ingestion** 
+- [x] **Ingestion** 
     - [x] Python script fetches job-related tweets from the twitter API and loads to a JSONL file.
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
-- [ ] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
+- [x] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
 - [ ] **Reporting** - Looker Studio lists job announcements with filters for parttime and contract positions.
 - [ ] **Deployment** - Docker to containerize the pipeline.
 
 
-### Next Step - Transformation
+### Transformation
 
 Here's what I am currently building, as a DAG.
 
 ![Image](img/dag.png)
 
-Here's what I plan to build in dbt. 
+Here's some additional details for the tables undergoing transformations. 
 
 ![Image](img/transformations.png)
 
