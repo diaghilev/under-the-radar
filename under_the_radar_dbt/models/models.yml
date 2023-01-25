@@ -2,9 +2,17 @@ version: 2
 
 models:
   - name: src_slack_jobs
+    description: "Source table containing lightly cleansed raw slack data. We only pull the fields we need."
     columns:
       - name: slack_id
         description: "Primary key for this table, generated using the surrogate key macro from the dbt utils package."
         tests:
           - unique
           - not_null
+
+  - name: src_twitter_jobs
+    description: "Source table containing lightly cleansed raw twitter data. We only pull the fields we need."
+
+  - name: stg_jobs
+    description: "Staging table whose main purpose is to merge slack and twitter data into one uniform format"
+

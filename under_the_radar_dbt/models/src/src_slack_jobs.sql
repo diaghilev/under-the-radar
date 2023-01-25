@@ -1,5 +1,6 @@
 WITH raw_slack_jobs AS (
-  SELECT * FROM modular-terra-372321.tweets_dataset.raw_slack_jobs
+  SELECT * FROM {{ source('bigquery', 'raw_slack_jobs')}}
+  -- SELECT * FROM modular-terra-372321.tweets_dataset.raw_slack_jobs
 )
 SELECT
    {{ dbt_utils.generate_surrogate_key(

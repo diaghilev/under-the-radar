@@ -1,5 +1,5 @@
 WITH raw_twitter_jobs AS (
-  SELECT * FROM modular-terra-372321.tweets_dataset.raw_twitter_jobs
+  SELECT * FROM {{ source('bigquery', 'raw_twitter_jobs')}}
 )
 SELECT
   cast(id as string) as tweet_id, -- casting to enable the Union in the stg_jobs model
