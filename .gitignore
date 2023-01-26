@@ -19,3 +19,5 @@ venv/
 # macOS
 .DS_Store
 
+# Other project files
+tweets_100.jsonl 
