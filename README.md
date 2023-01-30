@@ -23,8 +23,12 @@ Here's what I am currently building, as a DAG.
 
 ![Image](img/dag.png)
 
-Here's some additional details for the tables undergoing transformations. 
+Examples of transformations performed:
+- [ ] Slack data consists of threaded messages. The data we want (the job announcement) is the parent message in any given thread. 
+- [ ] Tweet data includes duplicate tweets. We need to remove those duplicates.
+- [x] Data from multiple sources needs to be merged and presented in a single list.
+- [x] We want to identify from unstructured text which jobs are potentially remote, contract, and/or part-time.
+- [ ] We want to present unstructured, messy text in a more human-readable format.
 
-![Image](img/transformations.png)
 
 
