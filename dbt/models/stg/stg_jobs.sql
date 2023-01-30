@@ -6,8 +6,8 @@ src_twitter_jobs AS (
   SELECT * FROM {{ ref('src_twitter_jobs')}}
 ),
 
--- limit slack data to parent messages (meaning: reply messages on a thread will be excluded)
-slack_identify_parent AS (
+-- limit slack data to job announcements by removing replies to message threads
+slack_exclude_replies AS (
   SELECT
     slack_id,
     slack_text,
@@ -15,7 +15,7 @@ slack_identify_parent AS (
     thread_ts,
     ts,
     workspace,
-    CASE WHEN thread_ts = ts THEN 1 ELSE 0 END is_parent 
+    CASE WHEN thread_ts = ts THEN 'no' ELSE 'yes' END is_reply 
   FROM src_slack_jobs
 )
 
@@ -24,8 +24,8 @@ SELECT
   slack_text as job_text,
   'slack' as source,
   timestamp as timestamp
-FROM slack_identify_parent
-WHERE is_parent = 1
+FROM slack_exclude_replies
+WHERE is_reply = 'no'
 UNION ALL
 SELECT
   tweet_id as job_id,
