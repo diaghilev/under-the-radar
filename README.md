@@ -13,7 +13,7 @@ The intent of this project is to build an end-to-end data pipeline that serves a
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
 - [x] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
-- [ ] **Reporting** - Looker Studio lists job announcements with filters for parttime and contract positions.
+- [ ] **Reporting** - Looker Studio lists job announcements with filters for part-time, contract and remote positions.
 - [ ] **Deployment** - Docker to containerize the pipeline.
 
 
@@ -25,12 +25,14 @@ Current state of the DAG
 ![Image](img/dag.png)
 
 
-Examples of transformations performed:
-- [x] Slack data consists of threaded messages. Our desired output excludes replies in a thread.
-- [ ] Tweet data includes duplicate tweets. We need to remove those duplicates.
+Transformations performed in stg_jobs model:
+- [x] Slack data consists of threaded messages. Our desired output excludes thread replies.
+- [x] Tweet data includes duplicate tweets. Our desired output removes duplicates.
 - [x] Data from multiple sources must be merged and presented in a single list.
-- [x] We must identify from unstructured text which jobs are potentially remote, contract, and/or part-time.
-- [ ] We must present unstructured, messy text in a more human-readable format.
+
+Transformations performed in dim_jobs model
+- [x] Identify which jobs are potentially part-time, contract or remote from unstructured text.
+- [ ] Present unstructured, messy text in a more human-readable format.
 
 
 

@@ -7,6 +7,6 @@ SELECT
   url as slack_url,
   timestamp,
   thread_ts, -- if ts = thread_ts, the row represents a 'parent message'
-  ts, -- id of the message, guaranteed unique within the channel or conversation
+  ts, -- id of the message
   workspace
 FROM raw_slack_jobs

@@ -6,7 +6,7 @@ src_twitter_jobs AS (
   SELECT * FROM {{ ref('src_twitter_jobs')}}
 ),
 
--- limit slack data to job announcements by removing replies to message threads
+-- remove replies from slack data
 slack_exclude_replies AS (
   SELECT
     slack_id,
@@ -17,8 +17,19 @@ slack_exclude_replies AS (
     workspace,
     CASE WHEN thread_ts = ts THEN 'no' ELSE 'yes' END is_reply 
   FROM src_slack_jobs
+),
+
+-- remove duplicates from twitter data
+twitter_exclude_dupes AS (
+  SELECT
+    tweet_id,
+    tweet_text,
+    timestamp,
+    ROW_NUMBER() OVER (PARTITION BY replace(tweet_text,' ','') ORDER BY timestamp DESC) AS row_num  
+  FROM src_twitter_jobs
 )
 
+-- merge slack and twitter data
 SELECT
   slack_id as job_id,
   slack_text as job_text,
@@ -32,4 +43,5 @@ SELECT
   tweet_text as job_text,
   'twitter' as source,
   timestamp as timestamp
-FROM src_twitter_jobs
+FROM twitter_exclude_dupes
+WHERE row_num = 1
