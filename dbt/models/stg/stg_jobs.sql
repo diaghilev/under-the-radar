@@ -4,6 +4,19 @@ WITH src_slack_jobs AS (
 
 src_twitter_jobs AS (
   SELECT * FROM {{ ref('src_twitter_jobs')}}
+),
+
+-- limit slack data to parent messages (meaning: reply messages on a thread will be excluded)
+slack_identify_parent AS (
+  SELECT
+    slack_id,
+    slack_text,
+    timestamp,
+    thread_ts,
+    ts,
+    workspace,
+    CASE WHEN thread_ts = ts THEN 1 ELSE 0 END is_parent 
+  FROM src_slack_jobs
 )
 
 SELECT
@@ -11,7 +24,8 @@ SELECT
   slack_text as job_text,
   'slack' as source,
   timestamp as timestamp
-FROM src_slack_jobs
+FROM slack_identify_parent
+WHERE is_parent = 1
 UNION ALL
 SELECT
   tweet_id as job_id,
