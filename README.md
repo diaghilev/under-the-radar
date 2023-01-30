@@ -26,7 +26,7 @@ Current state of the DAG
 
 
 Examples of transformations performed:
-- [ ] Slack data consists of threaded messages. Our desired output is the parent message for each thread.
+- [x] Slack data consists of threaded messages. Our desired output excludes replies in a thread.
 - [ ] Tweet data includes duplicate tweets. We need to remove those duplicates.
 - [x] Data from multiple sources must be merged and presented in a single list.
 - [x] We must identify from unstructured text which jobs are potentially remote, contract, and/or part-time.
