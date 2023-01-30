@@ -19,16 +19,18 @@ The intent of this project is to build an end-to-end data pipeline that serves a
 
 ### Transformation
 
-Here's what I am currently building, as a DAG.
+
+Current state of the DAG
 
 ![Image](img/dag.png)
 
+
 Examples of transformations performed:
-- [ ] Slack data consists of threaded messages. The data we want (the job announcement) is the parent message in any given thread. 
+- [ ] Slack data consists of threaded messages. Our desired output (the job post) is the parent message for each thread.
 - [ ] Tweet data includes duplicate tweets. We need to remove those duplicates.
-- [x] Data from multiple sources needs to be merged and presented in a single list.
-- [x] We want to identify from unstructured text which jobs are potentially remote, contract, and/or part-time.
-- [ ] We want to present unstructured, messy text in a more human-readable format.
+- [x] Data from multiple sources must be merged and presented in a single list.
+- [x] We must identify from unstructured text which jobs are potentially remote, contract, and/or part-time.
+- [ ] We must present unstructured, messy text in a more human-readable format.
 
 
 
