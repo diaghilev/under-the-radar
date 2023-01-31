@@ -12,7 +12,7 @@ SELECT
     WHEN lower(job_text) LIKE '%part-time%'
     OR lower(job_text) LIKE '%parttime%'
     OR lower(job_text) LIKE '%part time%' THEN 'Yes' ELSE 'No' END AS is_parttime,
-  CASE WHEN lower(job_text) LIKE 'remote' THEN 'Yes' ELSE 'No' END AS is_remote,
+  CASE WHEN lower(job_text) LIKE '%remote%' THEN 'Yes' ELSE 'No' END AS is_remote,
   source,
   timestamp
 FROM stg_jobs
