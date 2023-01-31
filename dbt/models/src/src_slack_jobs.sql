@@ -5,7 +5,7 @@ SELECT
    {{ dbt_utils.generate_surrogate_key(['text']) }} as slack_id, -- generate primary key
   text as slack_text,
   url as slack_url,
-  timestamp,
+  cast(timestamp as datetime) as timestamp,
   thread_ts, -- if ts = thread_ts, the row represents a 'parent message'
   ts, -- id of the message
   workspace
