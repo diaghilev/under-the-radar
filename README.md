@@ -37,7 +37,7 @@ Key transformations performed in dim_jobs model:
 
 ### Reporting
 
-The primary purpose of my reporting is just to serve a single list of 'under the radar' job announcements from multiple unstructured sources.
+The primary purpose of my reporting is to serve myself a single list of 'under the radar' job announcements.
 
 But I also had a few questions, which will be answered over time in the wkly_metrics table:
 - [x] In our sample, do we see an RTO trend in the form of decreasing remote jobs over time?
