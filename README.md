@@ -34,7 +34,12 @@ Key transformations performed in dim_jobs model:
 - [x] Identify which jobs are potentially part-time, contract or remote from unstructured text.
 - [ ] Present unstructured, messy text in a more human-readable format.
 
-Motivation for wkly_analytics model:
+
+### Reporting
+
+The primary purpose of my reporting is just to serve a single list of 'under the radar' job announcements from multiple unstructured sources.
+
+But I also had a few questions, which will be answered over time in the wkly_metrics table:
 - [x] In our sample, do we see an RTO trend in the form of decreasing remote jobs over time?
 - [x] In our sample, is there an increase in contract jobs (relative to all jobs) during this economic downturn?
 - [x] In our sample, is there an increase in parttime jobs (relative to all jobs) during this economic downturn?
