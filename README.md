@@ -3,7 +3,7 @@
 
 ### Objective
 
-The intent of this project is to build a live end-to-end data pipeline that serves a single list of 'under-the-radar' job announcements from multiple unstructured data sources (tweets and slack channels).
+The intent of this project is to build a live end-to-end data pipeline that generates a single list of 'under-the-radar' job announcements from multiple unstructured data sources (tweets and slack channels).
 
 
 ### Workflow
@@ -34,10 +34,14 @@ Key transformations performed in [dim_jobs model](https://github.com/diaghilev/u
 - [x] Identify which jobs are potentially part-time, contract or remote from unstructured text.
 - [ ] Present unstructured, messy text in a more human-readable format.
 
+Tests
+- [x] Unique and Not Null tests are run for the primary key of each table in models.yml
+- [ ] Additional tests coming soon
+
 
 ### Reporting
 
-My primary goal is to produce a live list of 'under the radar' job announcements (from unstructured sources).
+My primary goal is to generate a live list of 'under the radar' job announcements [here] (https://lookerstudio.google.com/u/0/reporting/8c81c373-e150-47ec-8479-932fb48ebaf8/page/tEnnC/edit) (first pass).
 
 ![Image](img/lookerstudio.png)
 
