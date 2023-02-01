@@ -25,12 +25,12 @@ The intent of this project is to build a live end-to-end data pipeline that serv
 ![Image](img/dag.png)
 
 
-Key transformations performed in stg_jobs model:
+Key transformations performed in [stg_jobs model](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/stg/stg_jobs.sql):
 - [x] Slack data consists of _threaded messages_. Our desired output excludes thread replies.
 - [x] Tweet data includes _duplicate tweets_. Our desired output removes duplicates.
 - [x] Data from _multiple sources_ must be merged and presented in a single list.
 
-Key transformations performed in dim_jobs model:
+Key transformations performed in [dim_jobs model](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/mart/dim_jobs.sql):
 - [x] Identify which jobs are potentially part-time, contract or remote from unstructured text.
 - [ ] Present unstructured, messy text in a more human-readable format.
 
@@ -42,7 +42,7 @@ My primary goal is to produce a live list of 'under the radar' job announcements
 ![Image](img/lookerstudio.png)
 
 
-But I also had a few questions, which will be answered over time in the wkly_metrics table:
+But I also had a few questions, which will be answered over time in the [wkly_metrics](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/mart/wkly_metrics.sql) table:
 - [x] In our sample, do we see an RTO trend in the form of decreasing remote jobs over time?
 - [x] In our sample, is there an increase in contract jobs (relative to all jobs) during this economic downturn?
 - [x] In our sample, is there an increase in parttime jobs (relative to all jobs) during this economic downturn?
