@@ -37,10 +37,10 @@ Key transformations performed in dim_jobs model:
 
 ### Reporting
 
-My primary goal is to produce a single, live list of 'under the radar' job announcements (from unstructured sources).
+My primary goal is to produce a live list of 'under the radar' job announcements (from unstructured sources).
 
 ![Image](img/lookerstudio.png)
-Link coming soon.
+
 
 But I also had a few questions, which will be answered over time in the wkly_metrics table:
 - [x] In our sample, do we see an RTO trend in the form of decreasing remote jobs over time?
