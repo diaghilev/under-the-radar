@@ -1,8 +1,44 @@
 version: 2
 
 models:
+  - name: wkly_metrics
+    description: "Aggregated metrics with a week grain to track how the percent of remote, contract and parttime roles changes over time."
+    columns:
+      - name: week
+        description: "Grain of this table. First day of each week."
+        tests:
+          - unique
+          - not_null
+      - name: count_jobs
+        description: "Total count of jobs added to dim_jobs that week"
+      - name: percent_contract
+        description: "Percent of job announcements containing the word contract (or similar) out of all jobs."
+      - name: percent_parttime
+        description: "Percent of job announcements containing the word parttime (or similar) out of all jobs."
+      - name: percent_remote
+        description: "Percent of job announcements containing the word remote (or similar) out of all jobs."
+      
+  
+  - name: dim_jobs
+    description: "Dimension table where each row contains a job announcement from one of the raw sources."
+    columns:
+      - name: job_id
+        description: "Primary key for this table."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_jobs
+    description: "Staging table whose main purpose is to merge slack and twitter data into one uniform format"
+    columns:
+      - name: job_id
+        description: "Primary key for this table."
+        tests:
+          - unique
+          - not_null
+
   - name: src_slack_jobs
-    description: "Source table containing lightly cleansed raw slack data. We only pull the fields we need."
+    description: "Source table containing lightly cleansed raw slack data. Fields have been limited compared to the raw data table in Bigquery."
     columns:
       - name: slack_id
         description: "Primary key for this table, generated using the surrogate key macro from the dbt utils package."
@@ -11,8 +47,10 @@ models:
           - not_null
 
   - name: src_twitter_jobs
-    description: "Source table containing lightly cleansed raw twitter data. We only pull the fields we need."
-
-  - name: stg_jobs
-    description: "Staging table whose main purpose is to merge slack and twitter data into one uniform format"
-
+    description: "Source table containing lightly cleansed raw twitter data. Fields have been limited compared to the raw data table in Bigquery."
+    columns:
+      - name: tweet_id
+        description: "Primary key for this table. Origin is twitter API."
+        tests:
+          - unique
+          - not_null
