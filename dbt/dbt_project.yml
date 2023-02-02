@@ -31,7 +31,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   dbt_utr:
     mart:
-      # materialize all models in mart as tables
       +materialized: table
     stg:
       +materialized: view
