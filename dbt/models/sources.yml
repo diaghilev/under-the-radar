@@ -3,8 +3,8 @@ version: 2
 sources:
 
   - name: bigquery
-    schema: tweets_dataset #equivalent to 'dataset' 
-    database: modular-terra-372321 #equivalent to 'project'
+    schema: tweets_dataset #equivalent to 'dataset' in BQ terminology 
+    database: modular-terra-372321 #equivalent to 'project' in BQ terminology
 
     # freshness:
     #   warn_after: {count: 24, period: hour}
