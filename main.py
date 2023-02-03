@@ -32,7 +32,7 @@ def get_tweets(query):
    tweets_raw = client.search_recent_tweets(
       query=query,
       tweet_fields=["id","text","created_at"], #Add entities later to get urls, leads to nested json
-      max_results=50,
+      max_results=100,
       user_auth=True
    )
 
@@ -126,11 +126,21 @@ def load_table(table_name, dataset_name, filename):
    print("Job completed: {}".format(job.result()))
 
 if __name__ == '__main__':
-    get_tweets(query='analytics engineer #hiring -is:retweet')
-    to_file(filename='tweets.jsonl', query='analytics engineer #hiring -is:retweet')
-    #create_dataset(dataset_name='tweets_dataset')
-    #create_table(table_name='raw_twitter_jobs', dataset_name='tweets_dataset')
-    #load_table(table_name='raw_twitter_jobs', dataset_name='tweets_dataset', filename='tweets.jsonl')
+    
+    # set twitter query (requires experimentation)
+    query = 'analytics engineer #hiring -is:retweet'
+    
+    # set data landing locations
+    filename = 'tweets.jsonl'
+    dataset_name = 'tweets_dataset' 
+    table_name = 'raw_twitter_jobs'
+
+   #finally, run functions
+    get_tweets(query=query)
+    to_file(filename=filename, query=query)
+    #create_dataset(dataset_name=dataset_name)
+    #create_table(table_name=table_name, dataset_name=dataset_name)
+    #load_table(table_name=table_name, dataset_name=dataset_name, filename=filename)
 
 
 
