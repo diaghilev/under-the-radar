@@ -33,7 +33,7 @@ twitter_exclude_dupes AS (
 SELECT
   slack_id as job_id,
   slack_text as job_text,
-  'slack' as source,
+  CONCAT('Slack - ', workspace) as source,
   timestamp as timestamp
 FROM slack_exclude_replies
 WHERE is_reply = 'no'
@@ -41,7 +41,7 @@ UNION ALL
 SELECT
   tweet_id as job_id,
   tweet_text as job_text,
-  'twitter' as source,
+  'Twitter' as source,
   timestamp as timestamp
 FROM twitter_exclude_dupes
 WHERE row_num = 1
