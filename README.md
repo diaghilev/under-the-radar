@@ -3,7 +3,7 @@
 
 ### Objective
 
-The intent of this project is to build a live end-to-end data pipeline that generates a single list of 'under-the-radar' job announcements from multiple unstructured data sources (tweets and slack channels).
+The intent of this project is to build a **live end-to-end data pipeline** that generates a single **list of 'under-the-radar' job announcements** from **multiple unstructured sources** (tweets and several slack channels).
 
 
 ### Workflow
