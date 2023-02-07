@@ -3,13 +3,12 @@
 
 ### Objective
 
-Build a living **end-to-end data pipeline** that generates a **list of 'under-the-radar' job announcements** from **multiple unstructured sources** (tweets and several slack channels).
-
+Build a live **end-to-end data pipeline** that generates a tailored list of **'under-the-radar' job announcements** from **multiple unstructured sources** (tweets and slack channels).
 
 ### Workflow
 
 - [x] **Ingestion** 
-    - [x] Python script fetches job-related tweets from the twitter API and loads to a JSONL file.
+    - [x] Python script fetches tweets from the twitter API and loads to a JSONL file.
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
 - [x] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
