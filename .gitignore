@@ -20,4 +20,5 @@ venv/
 .DS_Store
 
 # Other project files
-tweets_100.jsonl 
+tweets_200.jsonl 
+tweets_parttime.jsonl 
