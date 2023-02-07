@@ -9,8 +9,11 @@ Specifically, I'll build a live **end-to-end data pipeline** which takes **unstr
 
 <details><summary>Why?</summary>
 <p>
+
+<img left="right" src="img/slackpost.jpg">
+
 Finding fulfilling work is much easier if you're plugged into the social communities of your target profession. However, finding these communities takes time and monitoring them can be distracting. I wanted to experiment with what it would look like to tap into online social chatter about jobs in a systematic way. 
-<img align="right" src="img/slackpost.jpg">
+
 </p>
 </details>
 
