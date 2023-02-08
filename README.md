@@ -14,9 +14,9 @@ Specifically, this is a live **end-to-end data pipeline** which takes **unstruct
 <br>
 Finding fulfilling work is a big deal, and I’ve always been interested in the relatively chaotic way that it happens. 
 
-The path to fulfilling work is much faster if you’re plugged into the social communities for your chosen profession. But finding those communities takes time. And once found, the number of communities to monitor can quickly get out of hand.
+The path to great jobs gets shorter once you’re plugged into social communities for your chosen profession. But finding those communities takes time. And monitoring them all can get out of hand.
 
-I wanted to experiment with what it would look like to build a job search tool that uses those communities as input (one that could be repurposed for many different job niches).
+Can we tap into these communities to find jobs in a more systematic way? This project aims to find out.
 
 <br clear="all">
 </p>
@@ -53,17 +53,17 @@ Key transformations performed in [dim_jobs model](https://github.com/diaghilev/u
 
 Tests
 - [x] Unique and Not Null tests for all primary keys
-- [ ] Additional tests coming soon
+- [ ] Additional tests coming later
 
 
 ### Reporting
 
-My primary goal is to generate a live list of 'under the radar' job announcements [here](https://lookerstudio.google.com/u/0/reporting/8c81c373-e150-47ec-8479-932fb48ebaf8/page/tEnnC/edit) (first pass).
+My primary objective is to generate a list of 'under the radar' job announcements [here](https://lookerstudio.google.com/u/0/reporting/8c81c373-e150-47ec-8479-932fb48ebaf8/page/tEnnC/edit) (first pass).
 
 ![Image](img/lookerstudio.png)
 
 
-But I also had a few questions, which will be answered over time in the [wkly_metrics](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/mart/wkly_metrics.sql) table:
+But I also have a few questions, which will be answered over time in the [wkly_metrics](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/mart/wkly_metrics.sql) table:
 - [x] In our sample, do we see an RTO trend in the form of decreasing remote jobs over time?
 - [x] In our sample, is there an increase in contract jobs (relative to all jobs) during this economic downturn?
 - [x] In our sample, is there an increase in parttime jobs (relative to all jobs) during this economic downturn?
