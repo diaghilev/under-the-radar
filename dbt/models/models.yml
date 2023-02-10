@@ -54,3 +54,12 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: src_mastodon_jobs
+    description: "Source table containing lightly cleansed raw Mastodon data."
+    columns:
+      - name: mastodon_id
+        description: "Primary key for this table. Origin is Mastodon API."
+        tests:
+          - unique
+          - not_null
