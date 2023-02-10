@@ -49,7 +49,7 @@ def to_file(filename, query):
    # write result to a JSONL file
    with open(filename, "w") as f:
       for line in tweets:
-         f.write(json.dumps(line) + "\n") #Consider context management
+         f.write(json.dumps(line) + "\n") 
    
    print("File updated: {}".format(filename))
 
@@ -136,11 +136,11 @@ if __name__ == '__main__':
     table_name = 'raw_twitter_jobs'
 
    #finally, run functions
-    get_tweets(query=query)
-    to_file(filename=filename, query=query)
-    create_dataset(dataset_name=dataset_name)
-    create_table(table_name=table_name, dataset_name=dataset_name)
-    load_table(table_name=table_name, dataset_name=dataset_name, filename=filename)
+    get_tweets(query)
+   #  to_file(filename, query)
+   #  create_dataset(dataset_name)
+   #  create_table(table_name, dataset_name)
+   #  load_table(table_name, dataset_name, filename)
 
 
 
