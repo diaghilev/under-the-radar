@@ -14,9 +14,9 @@ Specifically, this is a live **end-to-end data pipeline** which takes **unstruct
 <br>
 Finding fulfilling work is a big deal, and I’ve always been interested in the relatively chaotic way that it happens. 
 
-It helps to be plugged into social communities for your chosen profession. But finding those communities takes time. And monitoring them all across the internet can get out of hand.
+It helps to be plugged into social communities for your chosen profession. But finding those communities takes time. And monitoring them all can get out of hand.
 
-Can we tap into these communities to find jobs in a more systematic way? This project aims to find out.
+Can we tap into social communities to find jobs in a more systematic way? This project aims to find out.
 
 <br clear="all">
 </p>
