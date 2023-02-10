@@ -13,7 +13,7 @@ from pprint import pprint
 def get_posts():
 
     # Make GET request to the API endpoint
-    auth = {'Authorization': 'Bearer ExAh3LOJC0T9R2ivYQYIBdVeaNg3tQkkbS5s30g-nyU'}
+    auth = {'Authorization': 'Bearer ExAh3LOJC0T9R2ivYQYIBdVeaNg3tQkkbS5s30g-nyU'} ## Hide this token, same method as twitter
     url = 'https://data-folks.masto.host//api/v1/timelines/tag/:hiring' # API endpoint
     params = {'all':['data'], 'limit': 20}
 

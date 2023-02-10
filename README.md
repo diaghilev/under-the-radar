@@ -5,14 +5,14 @@
 
 My objective is to build a job search tool that taps into online social chatter. 
 
-Specifically, this is a live **end-to-end data pipeline** which takes **unstructured sources** (like Slack, Mastodon and Twitter) as input and generates a customizable list of **'under-the-radar' job announcements** as output.
+Specifically, this is a live **end-to-end data pipeline** which takes **unstructured sources** (like Slack, Mastodon and Twitter) as input and generates a list of **'under-the-radar' job announcements** as output.
 
 <details><summary>Why?</summary>
 <p>
 
 <img align="right" width="350" src="img/slackpost.jpg">
 <br>
-Finding fulfilling work is a big deal, and I’ve always been interested in the relatively chaotic way that it happens. 
+Finding fulfilling work is a big deal, and I’ve always been interested in the chaotic way that it happens. 
 
 It helps to be plugged into social communities for your chosen profession. But finding those communities takes time. And monitoring them all can get out of hand.
 
