@@ -6,6 +6,10 @@ src_twitter_jobs AS (
   SELECT * FROM {{ ref('src_twitter_jobs')}}
 ),
 
+src_mastodon_jobs AS (
+  SELECT * FROM {{ ref('src_mastodon_jobs')}}
+),
+
 -- remove replies from slack data
 slack_exclude_replies AS (
   SELECT
@@ -45,3 +49,11 @@ SELECT
   timestamp as timestamp
 FROM twitter_exclude_dupes
 WHERE row_num = 1
+UNION ALL
+SELECT
+  mastodon_id as job_id,
+  mastodon_text as job_text,
+  'Mastodon' as source,
+  timestamp as timestamp
+FROM src_mastodon_jobs
+
