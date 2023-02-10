@@ -5,7 +5,7 @@
 
 My objective is to build a job search tool that taps into online social chatter. 
 
-Specifically, this is a live **end-to-end data pipeline** which takes **unstructured sources** (like Slack and Twitter) as input and generates a customizable list of **'under-the-radar' job announcements** as output.
+Specifically, this is a live **end-to-end data pipeline** which takes **unstructured sources** (like Slack, Mastodon and Twitter) as input and generates a customizable list of **'under-the-radar' job announcements** as output.
 
 <details><summary>Why?</summary>
 <p>
@@ -26,7 +26,8 @@ Can we tap into these communities to find jobs in a more systematic way? This pr
 ### Workflow
 
 - [x] **Ingestion** 
-    - [x] Python script fetches tweets from the twitter API and loads to a JSONL file.
+    - [x] Python script fetches posts from the Mastodon API and loads to a JSONL file.
+    - [x] Python script fetches tweets from the Twitter API and loads to a JSONL file.
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
 - [x] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
