@@ -113,7 +113,7 @@ def load_table(table_name, dataset_name, filename):
       #    bigquery.SchemaField("text", "STRING"),
       # ],
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-      write_disposition='WRITE_TRUNCATE' # {WRITE_APPEND; WRITE_EMPTY}
+      write_disposition='WRITE_APPEND' # {WRITE_TRUNCATE; WRITE_EMPTY}
    )
 
    # Upload JSONL to BigQuery
@@ -137,10 +137,10 @@ if __name__ == '__main__':
 
    #finally, run functions
     get_tweets(query)
-   #  to_file(filename, query)
-   #  create_dataset(dataset_name)
-   #  create_table(table_name, dataset_name)
-   #  load_table(table_name, dataset_name, filename)
+    to_file(filename, query)
+    create_dataset(dataset_name)
+    create_table(table_name, dataset_name)
+    load_table(table_name, dataset_name, filename)
 
 
 
