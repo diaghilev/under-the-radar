@@ -3,17 +3,22 @@
 # import packages
 import requests
 import json
+import configparser
 import os
 import time
 from bs4 import BeautifulSoup
 
 from pprint import pprint
 
+# read configs
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 # create function to get statuses
 def get_posts():
 
     # Make GET request to the API endpoint
-    auth = {'Authorization': 'Bearer ExAh3LOJC0T9R2ivYQYIBdVeaNg3tQkkbS5s30g-nyU'} ## Hide this token, same method as twitter
+    auth = {'Authorization': f"Bearer {config['mastodon']['user_key']}"} ## Hide this token, same method as twitter
     url = 'https://data-folks.masto.host//api/v1/timelines/tag/:hiring' # API endpoint
     params = {'all':['data'], 'limit': 20}
 
