@@ -18,7 +18,7 @@ config.read('config.ini')
 def get_posts():
 
     # Make GET request to the API endpoint
-    auth = {'Authorization': f"Bearer {config['mastodon']['user_key']}"} ## Hide this token, same method as twitter
+    auth = {'Authorization': f"Bearer {config['mastodon']['user_key']}"} 
     url = 'https://data-folks.masto.host//api/v1/timelines/tag/:hiring' # API endpoint
     params = {'all':['data'], 'limit': 20}
 
