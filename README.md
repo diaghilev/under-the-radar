@@ -27,14 +27,14 @@ Can we tap into social communities to find jobs in a more systematic way? This p
 
 - [x] **Ingestion** 
     - [x] Python script fetches posts from the Mastodon API and loads to a JSONL file.
-    - [x] Python script fetches tweets from the Twitter API and loads to a JSONL file[^*].
+    - [x] Python script fetches tweets from the Twitter API and loads to a JSONL file.[^1]
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
 - [x] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
 - [x] **Reporting** - Looker Studio lists job announcements with filters for part-time, contract and remote positions.
 - [ ] **Deployment** - Docker to containerize the pipeline.
 
-[^*]: If the Twitter API is put behind a paywall, that source will be paused and I'll find an alternate solution.
+[^1]: If the Twitter API goes behind a paywall, that source will be paused and I'll find an alternate solution.
 ### Transformation
 
 
