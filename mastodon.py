@@ -125,10 +125,6 @@ def load_table(table_name, dataset_name, filename):
    # Define table schema
    job_config = bigquery.LoadJobConfig(
       autodetect=True,
-      # schema=[
-      #    bigquery.SchemaField("id", "INT64"),
-      #    bigquery.SchemaField("content", "STRING"),
-      # ],
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
       write_disposition='WRITE_TRUNCATE' # {WRITE_APPEND; WRITE_EMPTY}
    )
