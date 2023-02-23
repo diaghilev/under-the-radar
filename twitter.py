@@ -7,6 +7,14 @@ import requests
 import json
 import os
 import time
+from google.cloud import bigquery
+from google.cloud.exceptions import NotFound
+
+# Set google application credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
+
+# Construct BigQuery client object
+CLIENT = bigquery.Client() 
 
 # create function to get tweets
 def get_tweets(query):
@@ -21,7 +29,7 @@ def get_tweets(query):
    access_token = config['twitter']['access_token']
    access_token_secret = config['twitter']['access_token_secret']
 
-   client = tweepy.Client(
+   tweepy_client = tweepy.Client(
       consumer_key= api_key,
       consumer_secret= api_key_secret,
       access_token= access_token,
@@ -29,7 +37,7 @@ def get_tweets(query):
       return_type = requests.Response 
    )
 
-   tweets_raw = client.search_recent_tweets(
+   tweets_raw = tweepy_client.search_recent_tweets(
       query=query,
       tweet_fields=["id","text","created_at"], #Add entities later to get urls, leads to nested json
       max_results=100,
@@ -51,23 +59,13 @@ def to_file(filename, query):
       for line in tweets:
          f.write(json.dumps(line) + "\n") 
    
-   print("File updated: {}".format(filename))
-
-# Import google cloud packages
-from google.cloud import bigquery
-from google.cloud.exceptions import NotFound
-
-# Set google application credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
-
-# Construct BigQuery client object
-client = bigquery.Client() 
+   print(f"File updated: {filename}")
 
 # Create dataset if none exists
 def create_dataset(dataset_name):
 
     # Set dataset_id to the ID of the dataset to create.
-    dataset_id = "{}.{}".format(client.project, dataset_name)
+    dataset_id = f"{CLIENT.project}.{dataset_name}"
 
     # Construct a Dataset object to send to the API.
     dataset = bigquery.Dataset(dataset_id)
@@ -75,10 +73,10 @@ def create_dataset(dataset_name):
 
     # Create dataset if none exists
     try:
-        client.get_dataset(dataset_id) 
+        CLIENT.get_dataset(dataset_id) 
     except NotFound:
-        dataset = client.create_dataset(dataset, timeout=30)  
-        print("Dataset created: {}".format(dataset_id))
+        dataset = CLIENT.create_dataset(dataset, timeout=30)  
+        print(f"Dataset created: {dataset_id}")
 
     return dataset
 
@@ -92,10 +90,10 @@ def create_table(table_name, dataset_name):
 
    # Check if table exists. If not, create table.
    try:
-      client.get_table(table) #API request
+      CLIENT.get_table(table) #API request
    except NotFound:
-      table = client.create_table(table)
-      print("Table created: {}".format(table))
+      table = CLIENT.create_table(table)
+      print(f"Table created: {table}")
 
 # Load table from JSONL
 def load_table(table_name, dataset_name, filename):
@@ -107,23 +105,18 @@ def load_table(table_name, dataset_name, filename):
    # Define table schema
    job_config = bigquery.LoadJobConfig(
       autodetect=True,
-      # schema=[
-      #    bigquery.SchemaField("edit_history_tweet_ids", "INT64"),
-      #    bigquery.SchemaField("id", "INT64"),
-      #    bigquery.SchemaField("text", "STRING"),
-      # ],
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
       write_disposition='WRITE_APPEND' # {WRITE_TRUNCATE; WRITE_EMPTY}
    )
 
    # Upload JSONL to BigQuery
    with open(filename, "rb") as file:
-      job = client.load_table_from_file(file, table_id, job_config=job_config)
+      job = CLIENT.load_table_from_file(file, table_id, job_config=job_config)
 
    while job.state != 'DONE':
       job.reload()
       time.sleep(2)
-   print("Job completed: {}".format(job.result()))
+   print(f"Job completed: {job.result()}")
 
 if __name__ == '__main__':
     
@@ -138,9 +131,9 @@ if __name__ == '__main__':
    #finally, run functions
     get_tweets(query)
     to_file(filename, query)
-    create_dataset(dataset_name)
-    create_table(table_name, dataset_name)
-    load_table(table_name, dataset_name, filename)
+    #create_dataset(dataset_name)
+    #create_table(table_name, dataset_name)
+    #load_table(table_name, dataset_name, filename)
 
 
 

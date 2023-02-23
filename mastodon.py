@@ -7,18 +7,24 @@ import configparser
 import os
 import time
 from bs4 import BeautifulSoup
+from google.cloud import bigquery
+from google.cloud.exceptions import NotFound
 
-from pprint import pprint
+# Set google application credentials
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
+
+# Construct BigQuery client object
+CLIENT = bigquery.Client() 
 
 # read configs
-config = configparser.ConfigParser()
-config.read('config.ini')
+CONFIG = configparser.ConfigParser()
+CONFIG.read('CONFIG.ini')
 
 # create function to get statuses
 def get_posts():
 
     # Make GET request to the API endpoint
-    auth = {'Authorization': f"Bearer {config['mastodon']['user_key']}"} 
+    auth = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
     url = 'https://data-folks.masto.host//api/v1/timelines/tag/:hiring' # API endpoint
     params = {'all':['data'], 'limit': 20}
 
@@ -30,7 +36,7 @@ def get_posts():
         # Convert response to JSON
         data = response.json()
 
-        #Extract statuses from the JSON
+        #Extract posts from the JSON
         posts = []
 
         for idx, item in enumerate(data):
@@ -40,7 +46,7 @@ def get_posts():
             content_raw = data[idx]['content']
             acct = data[idx]['account']['acct']
 
-            # Remove HTML from text
+            # Remove HTML from content of the post
             soup = BeautifulSoup(content_raw,'html.parser')
             content = soup.get_text()
 
@@ -68,23 +74,13 @@ def to_file(filename):
         for line in get_posts():
             f.write(json.dumps(line) + "\n") 
 
-    print("File updated: {}".format(filename))
-
-# Import google cloud packages
-from google.cloud import bigquery
-from google.cloud.exceptions import NotFound
-
-# Set google application credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
-
-# Construct BigQuery client object
-client = bigquery.Client() 
+    print(f"File updated: {filename}")
 
 # Create dataset if none exists
 def create_dataset(dataset_name):
 
     # Set dataset_id to the ID of the dataset to create.
-    dataset_id = "{}.{}".format(client.project, dataset_name)
+    dataset_id = f"{CLIENT.project}.{dataset_name}"
 
     # Construct a Dataset object to send to the API.
     dataset = bigquery.Dataset(dataset_id)
@@ -92,11 +88,10 @@ def create_dataset(dataset_name):
 
     # Create dataset if none exists
     try:
-        client.get_dataset(dataset_id) 
-        #print("Dataset exists: {}".format(dataset_id))
+        CLIENT.get_dataset(dataset_id) 
     except NotFound:
-        dataset = client.create_dataset(dataset, timeout=30)  
-        print("Dataset created: {}".format(dataset_id))
+        dataset = CLIENT.create_dataset(dataset, timeout=30)  
+        print(f"Dataset created: {dataset_id}")
 
     return dataset
 
@@ -110,10 +105,10 @@ def create_table(table_name, dataset_name):
 
    # Check if table exists. If not, create table.
    try:
-      client.get_table(table) #API request
+      CLIENT.get_table(table) #API request
    except NotFound:
-      table = client.create_table(table)
-      print("Table created: {}".format(table))
+      table = CLIENT.create_table(table)
+      print(f"Table created: {table}")
 
 # Load table from JSONL
 def load_table(table_name, dataset_name, filename):
@@ -131,12 +126,12 @@ def load_table(table_name, dataset_name, filename):
 
    # Upload JSONL to BigQuery
    with open(filename, "rb") as file:
-      job = client.load_table_from_file(file, table_id, job_config=job_config)
+      job = CLIENT.load_table_from_file(file, table_id, job_config=job_config)
 
    while job.state != 'DONE':
       job.reload()
       time.sleep(2)
-   print("Job completed: {}".format(job.result()))
+   print(f"Job completed: {job.result()}")
 
 if __name__ == '__main__':
 
