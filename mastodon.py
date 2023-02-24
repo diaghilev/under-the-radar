@@ -32,7 +32,7 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read('CONFIG.ini')
 
 # create function to get toots
-def get_toots(hashtag: str, keyword: list -> List[Toot]):
+def get_toots(hashtag: str, keyword: list) -> list[dict]:
     '''Get a list of Toot objects from the Mastodon API based on a hashtag and optional keywords
     
     Returns:
@@ -98,7 +98,7 @@ def to_file(filename: str):
     print(f"File updated: {filename}")
 
 # Create dataset if none exists
-def create_dataset(dataset_name: str):
+def create_dataset(dataset_name: str) -> bigquery.Dataset:
     '''Create the BigQuery Dataset if it does not already exist
     
     Args:
