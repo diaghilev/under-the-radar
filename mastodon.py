@@ -1,12 +1,12 @@
 '''
 This script extracts toots from the Mastodon API and loads them to Bigquery.
 
-This script runs the following steps:
-1 Get list of Toot objects from the Mastodon API based on a hashtag and optional keyword
-2 Load Toots to a JSONL file
-3 Create a BigQuery Dataset if it does not exist
-4 Create a BigQuery Table if it does not exist
-5 Load the BigQuery Table from the JSONL file
+This script runs the following functions
+    get_toots - Get list of Toot objects from the Mastodon API based on a hashtag and optional keyword
+    to_file - Load Toots to a JSONL file
+    create_dataset - Create a BigQuery Dataset if it does not exist
+    create_table - Create a BigQuery Table if it does not exist
+    load_table - Load the BigQuery Table from the JSONL file
 
 Last Updated: 2023-02
 '''
