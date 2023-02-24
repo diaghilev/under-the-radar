@@ -28,7 +28,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/
 CLIENT = bigquery.Client() 
 
 # create function to get tweets
-def get_tweets(query: str):
+def get_tweets(query: str) -> list[dict]:
    '''Get a list of Tweet objects from the Twitter API
     
    Args:
@@ -86,7 +86,7 @@ def to_file(filename: str, query: str):
    print(f"File updated: {filename}")
 
 # Create dataset if none exists
-def create_dataset(dataset_name: str):
+def create_dataset(dataset_name: str) -> bigquery.Dataset:
    '''Create the BigQuery Dataset if it does not already exist
     
     Args:
