@@ -185,7 +185,6 @@ if __name__ == '__main__':
 
     # run functions
     get_toots(hashtag, keyword)
-    exit()
     to_file(filename)
     create_dataset(dataset_name)
     create_table(table_name, dataset_name)
