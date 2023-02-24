@@ -1,12 +1,12 @@
 '''
 This script extracts tweets from the Twitter API and loads them to Bigquery.
 
-This script runs the following steps:
-1 Get list of Tweet objects from the Twitter API based on a search query
-2 Load Tweets to a JSONL file
-3 Create a BigQuery Dataset if it does not exist
-4 Create a BigQuery Table if it does not exist
-5 Load the BigQuery Table from the JSONL file
+This script runs the following functions:
+   get_tweets - Get list of Tweet objects from the Twitter API based on a search query
+   to_file - Load Tweets to a JSONL file
+   create_dataset - Create a BigQuery Dataset if it does not exist
+   create_table - Create a BigQuery Table if it does not exist
+   load_table - Load the BigQuery Table from the JSONL file
 
 Last Updated: 2023-02
 '''
