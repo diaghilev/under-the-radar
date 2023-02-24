@@ -1,4 +1,15 @@
-# This script extracts posts (officially called 'statuses' or 'toots') from the Mastodon API and loads them to Bigquery
+'''
+This script extracts toots from the Mastodon API and loads them to Bigquery.
+
+This script runs the following steps:
+1 Get list of Toot objects from the Mastodon API based on a hashtag and optional keyword
+2 Load Toots to a JSONL file
+3 Create a BigQuery Dataset if it does not exist
+4 Create a BigQuery Table if it does not exist
+5 Load the BigQuery Table from the JSONL file
+
+Last Updated: 2023-02
+'''
 
 # import packages
 import requests
@@ -20,13 +31,18 @@ CLIENT = bigquery.Client()
 CONFIG = configparser.ConfigParser()
 CONFIG.read('CONFIG.ini')
 
-# create function to get statuses
-def get_posts():
-
+# create function to get toots
+def get_toots(hashtag: str, keyword: list):
+    '''Get a list of Toot objects from the Mastodon API based on a hashtag and optional keywords
+    
+    Returns:
+        A list of Toot objects containing the hashtag and keywords
+    '''
+    
     # Make GET request to the API endpoint
     auth = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
-    url = 'https://data-folks.masto.host//api/v1/timelines/tag/:hiring' # API endpoint
-    params = {'all':['data'], 'limit': 20}
+    url = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
+    params = {'all':keyword, 'limit': 20}
 
     response = requests.get(url, data=params, headers=auth)
 
@@ -36,8 +52,8 @@ def get_posts():
         # Convert response to JSON
         data = response.json()
 
-        #Extract posts from the JSON
-        posts = []
+        #Extract toots from the JSON
+        toots = []
 
         for idx, item in enumerate(data):
             id = data[idx]['id']
@@ -46,11 +62,11 @@ def get_posts():
             content_raw = data[idx]['content']
             acct = data[idx]['account']['acct']
 
-            # Remove HTML from content of the post
+            # Remove HTML from content of the toot
             soup = BeautifulSoup(content_raw,'html.parser')
             content = soup.get_text()
 
-            post = {
+            toot = {
             'id': id,
             'created_at': created_at,
             'content': content,
@@ -58,27 +74,39 @@ def get_posts():
             'acct': acct
             }
 
-            posts.append(post)
+            toots.append(toot)
 
-        return posts
+        return toots
 
     # If request fails, show the error
     else:
-        print("Request failed with status code:", response.status_code)
+        print(f"Request failed with status code: {response.status_code}")
 
-# create function to put posts in jsonl file
-def to_file(filename):
+# create function to put toots in jsonl file
+def to_file(filename: str):
+    '''Load mastodon toots to a JSONL file
     
+    Args:
+        filename: The name of the JSONL file to write to
+        
+    '''    
     # write result to file
     with open(filename, "w") as f:
-        for line in get_posts():
+        for line in get_toots(hashtag, keyword):
             f.write(json.dumps(line) + "\n") 
 
     print(f"File updated: {filename}")
 
 # Create dataset if none exists
-def create_dataset(dataset_name):
-
+def create_dataset(dataset_name: str):
+    '''Create the BigQuery Dataset if it does not already exist
+    
+    Args:
+        dataset_name: The name of the dataset to create
+        
+    Returns:
+        A Dataset Object
+    '''
     # Set dataset_id to the ID of the dataset to create.
     dataset_id = f"{CLIENT.project}.{dataset_name}"
 
@@ -96,44 +124,59 @@ def create_dataset(dataset_name):
     return dataset
 
 # Create table if none exists
-def create_table(table_name, dataset_name):
-
+def create_table(table_name: str, dataset_name: str):
+    '''Create the BigQuery Table if it does not already exist
+    
+    Args:
+        dataset_name: The name of the dataset containing the table
+        table_name: The name of the table to create
+    '''
    # Construct table reference
-   dataset = create_dataset(dataset_name)
-   table_id = dataset.table(table_name)
-   table = bigquery.Table(table_id)
+    dataset = create_dataset(dataset_name)
+    table_id = dataset.table(table_name)
+    table = bigquery.Table(table_id)
 
    # Check if table exists. If not, create table.
-   try:
+    try:
       CLIENT.get_table(table) #API request
-   except NotFound:
+    except NotFound:
       table = CLIENT.create_table(table)
       print(f"Table created: {table}")
 
 # Load table from JSONL
-def load_table(table_name, dataset_name, filename):
-
+def load_table(table_name: str, dataset_name: str, filename: str):
+    '''Load Mastodon Toots in the JSONL file to the BigQuery Table
+    
+    Args:
+        dataset_name: The name of the dataset containing the table
+        table_name: The name of the table to create
+        filename: JSONL file containing the toots
+    '''
    # Construct table reference
-   dataset = create_dataset(dataset_name)
-   table_id = dataset.table(table_name)
+    dataset = create_dataset(dataset_name)
+    table_id = dataset.table(table_name)
 
    # Define table schema
-   job_config = bigquery.LoadJobConfig(
+    job_config = bigquery.LoadJobConfig(
       autodetect=True,
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
       write_disposition='WRITE_TRUNCATE' # {WRITE_APPEND; WRITE_EMPTY}
    )
 
    # Upload JSONL to BigQuery
-   with open(filename, "rb") as file:
+    with open(filename, "rb") as file:
       job = CLIENT.load_table_from_file(file, table_id, job_config=job_config)
 
-   while job.state != 'DONE':
+    while job.state != 'DONE':
       job.reload()
       time.sleep(2)
-   print(f"Job completed: {job.result()}")
+    print(f"Job completed: {job.result()}")
 
 if __name__ == '__main__':
+
+    # Set hashtag and optional keywords to search Mastodon toots for
+    hashtag = 'hiring'
+    keyword = ['data'] #if no keyword is desired, set an empty string
 
     # set data landing locations
     filename = 'mastodon.jsonl'
@@ -141,7 +184,7 @@ if __name__ == '__main__':
     table_name = 'raw_mastodon_jobs'
 
     # run functions
-    get_posts()
+    get_toots(hashtag, keyword)
     to_file(filename)
     create_dataset(dataset_name)
     create_table(table_name, dataset_name)
