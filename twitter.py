@@ -1,4 +1,15 @@
-# This script ingests tweets from twitter API and loads them to BigQuery
+'''
+This script extracts tweets from the Twitter API and loads them to Bigquery.
+
+This script runs the following steps:
+1 Get list of Tweet objects from the Twitter API based on a search query
+2 Load Tweets to a JSONL file
+3 Create a BigQuery Dataset if it does not exist
+4 Create a BigQuery Table if it does not exist
+5 Load the BigQuery Table from the JSONL file
+
+Last Updated: 2023-02
+'''
 
 # import packages
 import tweepy
@@ -17,8 +28,15 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/
 CLIENT = bigquery.Client() 
 
 # create function to get tweets
-def get_tweets(query):
+def get_tweets(query: str):
+   '''Get a list of Tweet objects from the Twitter API
+    
+   Args:
+        query: The search query to use to get tweets
 
+    Returns:
+        A list of Tweet objects, which are not yet processed
+    '''
    # read configs
    config = configparser.ConfigParser()
    config.read('config.ini')
@@ -39,7 +57,7 @@ def get_tweets(query):
 
    tweets_raw = tweepy_client.search_recent_tweets(
       query=query,
-      tweet_fields=["id","text","created_at"], #Add entities later to get urls, leads to nested json
+      tweet_fields=["id","text","created_at"], 
       max_results=100,
       user_auth=True
    )
@@ -47,12 +65,18 @@ def get_tweets(query):
    return tweets_raw
 
 # create function to put tweets in jsonl file 
-def to_file(filename, query):
-
+def to_file(filename: str, query: str):
+   '''Load Tweet objects to a JSONL file
+    
+    Args:
+        filename: The name of the JSONL file to write to
+        query: The search query to use to get tweets
+            
+    ''' 
    # convert tweets to dictionary and remove metadata
-   tweets_raw = get_tweets(query) #datatype is <class 'requests.models.Response'>
-   tweets_dict = tweets_raw.json() #datatype is <class 'dict'>
-   tweets = tweets_dict['data'] #datatype is <class 'list'>
+   tweets_raw = get_tweets(query) #datatype <class 'requests.models.Response'>
+   tweets_dict = tweets_raw.json() #datatype <class 'dict'>
+   tweets = tweets_dict['data'] #datatype <class 'list'>
 
    # write result to a JSONL file
    with open(filename, "w") as f:
@@ -62,27 +86,39 @@ def to_file(filename, query):
    print(f"File updated: {filename}")
 
 # Create dataset if none exists
-def create_dataset(dataset_name):
+def create_dataset(dataset_name: str):
+   '''Create the BigQuery Dataset if it does not already exist
+    
+    Args:
+        dataset_name: The name of the dataset to create
+        
+    Returns:
+        A Dataset Object
+    '''
+   # Set dataset_id to the ID of the dataset to create.
+   dataset_id = f"{CLIENT.project}.{dataset_name}"
 
-    # Set dataset_id to the ID of the dataset to create.
-    dataset_id = f"{CLIENT.project}.{dataset_name}"
+   # Construct a Dataset object to send to the API.
+   dataset = bigquery.Dataset(dataset_id)
+   dataset.location = "US"
 
-    # Construct a Dataset object to send to the API.
-    dataset = bigquery.Dataset(dataset_id)
-    dataset.location = "US"
-
-    # Create dataset if none exists
-    try:
+   # Create dataset if none exists
+   try:
         CLIENT.get_dataset(dataset_id) 
-    except NotFound:
+   except NotFound:
         dataset = CLIENT.create_dataset(dataset, timeout=30)  
         print(f"Dataset created: {dataset_id}")
 
-    return dataset
+   return dataset
 
 # Create table if none exists
-def create_table(table_name, dataset_name):
-
+def create_table(table_name: str, dataset_name: str):
+   '''Create the BigQuery Table if it does not already exist
+    
+    Args:
+        table_name: The name of the table to create
+        dataset_name: The name of the dataset containing the table
+   '''
    # Construct table reference
    dataset = create_dataset(dataset_name)
    table_id = dataset.table(table_name)
@@ -96,8 +132,14 @@ def create_table(table_name, dataset_name):
       print(f"Table created: {table}")
 
 # Load table from JSONL
-def load_table(table_name, dataset_name, filename):
-
+def load_table(table_name: str, dataset_name: str, filename: str):
+   '''Load Tweets in the JSONL file to the BigQuery Table
+    
+    Args:
+        dataset_name: The name of the dataset containing the table
+        table_name: The name of the table to create
+        filename: JSONL file containing the tweets
+    '''
    # Construct table reference
    dataset = create_dataset(dataset_name)
    table_id = dataset.table(table_name)
@@ -131,9 +173,9 @@ if __name__ == '__main__':
    #finally, run functions
     get_tweets(query)
     to_file(filename, query)
-    #create_dataset(dataset_name)
-    #create_table(table_name, dataset_name)
-    #load_table(table_name, dataset_name, filename)
+    create_dataset(dataset_name)
+    create_table(table_name, dataset_name)
+    load_table(table_name, dataset_name, filename)
 
 
 
