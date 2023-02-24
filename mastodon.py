@@ -32,7 +32,7 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read('CONFIG.ini')
 
 # create function to get toots
-def get_toots(hashtag: str, keyword: list):
+def get_toots(hashtag: str, keyword: list -> List[Toot]):
     '''Get a list of Toot objects from the Mastodon API based on a hashtag and optional keywords
     
     Returns:
@@ -185,6 +185,7 @@ if __name__ == '__main__':
 
     # run functions
     get_toots(hashtag, keyword)
+    exit()
     to_file(filename)
     create_dataset(dataset_name)
     create_table(table_name, dataset_name)
