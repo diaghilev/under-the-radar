@@ -19,6 +19,7 @@ venv/
 # macOS
 .DS_Store
 
-# Other project files
+# Other test files
+test.py
 tweets_200.jsonl 
 tweets_parttime.jsonl 

@@ -52,35 +52,30 @@ def get_toots(hashtag: str, keyword: list) -> list[dict]:
         # Convert response to JSON
         data = response.json()
 
-        #Extract toots from the JSON
+        class Toot():
+            # constructor
+            def __init__(self, id, url, created_at, content, acct):
+                self.id = id
+                self.url = url
+                self.created_at = created_at
+                self.content = BeautifulSoup(content,'html.parser').get_text()   
+                self.acct = acct    
+
+        # Extract toots from data
+        extract_toots = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in data] 
+
         toots = []
 
-        for idx, item in enumerate(data):
-            id = data[idx]['id']
-            url = data[idx]['url']
-            created_at = data[idx]['created_at']
-            content_raw = data[idx]['content']
-            acct = data[idx]['account']['acct']
+        for toot in extract_toots:
+            entry: str = f'{{"id": "{toot.id}", "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}'
+            toots.append(entry)
 
-            # Remove HTML from content of the toot
-            soup = BeautifulSoup(content_raw,'html.parser')
-            content = soup.get_text()
-
-            toot = {
-            'id': id,
-            'created_at': created_at,
-            'content': content,
-            'url': url,
-            'acct': acct
-            }
-
-            toots.append(toot)
-
+        # Experimentation ends here
         return toots
 
-    # If request fails, show the error
+    # If the response fails, print the status code and reason
     else:
-        print(f"Request failed with status code: {response.status_code}")
+        print(f"Error: {response.status_code} - {response.reason}")
 
 # create function to put toots in jsonl file
 def to_file(filename: str):
@@ -93,7 +88,7 @@ def to_file(filename: str):
     # write result to file
     with open(filename, "w") as f:
         for line in get_toots(hashtag, keyword):
-            f.write(json.dumps(line) + "\n") 
+            f.write(line + "\n") 
 
     print(f"File updated: {filename}")
 
