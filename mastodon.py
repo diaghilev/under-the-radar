@@ -40,9 +40,9 @@ def get_toots(hashtag: str, keyword: list) -> list[dict]:
     '''
     
     # Make GET request to the API endpoint
-    auth = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
-    url = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
-    params = {'all':keyword, 'limit': 20}
+    auth: dict = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
+    url: str = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
+    params: dict = {'all':keyword, 'limit': 20}
 
     response = requests.get(url, data=params, headers=auth)
 
@@ -58,13 +58,13 @@ def get_toots(hashtag: str, keyword: list) -> list[dict]:
                 self.id = id
                 self.url = url
                 self.created_at = created_at
-                self.content = BeautifulSoup(content,'html.parser').get_text()   
+                self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
                 self.acct = acct    
 
         # Extract toots from data
-        extract_toots = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in data] 
+        extract_toots: list[Toot] = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in data] 
 
-        toots = []
+        toots: list = []
 
         for toot in extract_toots:
             entry: str = f'{{"id": "{toot.id}", "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}'
@@ -103,7 +103,7 @@ def create_dataset(dataset_name: str) -> bigquery.Dataset:
         A Dataset Object
     '''
     # Set dataset_id to the ID of the dataset to create.
-    dataset_id = f"{CLIENT.project}.{dataset_name}"
+    dataset_id: str = f"{CLIENT.project}.{dataset_name}"
 
     # Construct a Dataset object to send to the API.
     dataset = bigquery.Dataset(dataset_id)
@@ -170,13 +170,13 @@ def load_table(table_name: str, dataset_name: str, filename: str):
 if __name__ == '__main__':
 
     # Set hashtag and optional keywords to search Mastodon toots for
-    hashtag = 'hiring'
-    keyword = ['data'] #if no keyword is desired, set an empty string
+    hashtag: str = 'hiring'
+    keyword: list = ['data'] #if no keyword is desired, set an empty string
 
     # set data landing locations
-    filename = 'mastodon.jsonl'
-    dataset_name = 'tweets_dataset'
-    table_name = 'raw_mastodon_jobs'
+    filename: str = 'mastodon.jsonl'
+    dataset_name: str = 'tweets_dataset'
+    table_name: str = 'raw_mastodon_jobs'
 
     # run functions
     get_toots(hashtag, keyword)
