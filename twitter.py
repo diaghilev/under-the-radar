@@ -34,9 +34,9 @@ def get_tweets(query: str) -> list[dict]:
    Args:
         query: The search query to use to get tweets
 
-    Returns:
+   Returns:
         A list of Tweet objects, which are not yet processed
-    '''
+   '''
    # read configs
    config = configparser.ConfigParser()
    config.read('config.ini')
@@ -58,7 +58,7 @@ def get_tweets(query: str) -> list[dict]:
    tweets_raw = tweepy_client.search_recent_tweets(
       query=query,
       tweet_fields=["id","text","created_at"], 
-      max_results=100,
+      max_results=10,
       user_auth=True
    )
 
@@ -68,11 +68,11 @@ def get_tweets(query: str) -> list[dict]:
 def to_file(filename: str, query: str):
    '''Load Tweet objects to a JSONL file
     
-    Args:
+   Args:
         filename: The name of the JSONL file to write to
         query: The search query to use to get tweets
             
-    ''' 
+   ''' 
    # convert tweets to dictionary and remove metadata
    tweets_raw = get_tweets(query) #datatype <class 'requests.models.Response'>
    tweets_dict = tweets_raw.json() #datatype <class 'dict'>
@@ -148,7 +148,7 @@ def load_table(table_name: str, dataset_name: str, filename: str):
    job_config = bigquery.LoadJobConfig(
       autodetect=True,
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-      write_disposition='WRITE_APPEND' # {WRITE_TRUNCATE; WRITE_EMPTY}
+      write_disposition='WRITE_TRUNCATE' # {WRITE_APPEND; WRITE_EMPTY}
    )
 
    # Upload JSONL to BigQuery
@@ -163,8 +163,9 @@ def load_table(table_name: str, dataset_name: str, filename: str):
 if __name__ == '__main__':
     
     # set twitter query (requires experimentation)
-    query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
-    
+    #query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
+    query = '"analytics engineer" #jobs -is:retweet'
+
     # set data landing locations
     filename = 'tweets.jsonl'
     dataset_name = 'tweets_dataset' 
