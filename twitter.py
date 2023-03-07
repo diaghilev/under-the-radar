@@ -163,8 +163,8 @@ def load_table(table_name: str, dataset_name: str, filename: str):
 if __name__ == '__main__':
     
     # set twitter query (requires experimentation)
-    #query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
-    query = '"analytics engineer" #jobs -is:retweet'
+    query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
+    #query = '"analytics engineer" #jobs -is:retweet'
 
     # set data landing locations
     filename = 'tweets.jsonl'
@@ -174,9 +174,9 @@ if __name__ == '__main__':
    #finally, run functions
     get_tweets(query)
     to_file(filename, query)
-    create_dataset(dataset_name)
-    create_table(table_name, dataset_name)
-    load_table(table_name, dataset_name, filename)
+    #create_dataset(dataset_name)
+    #create_table(table_name, dataset_name)
+    #load_table(table_name, dataset_name, filename)
 
 
 
