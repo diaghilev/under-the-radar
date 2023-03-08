@@ -2,8 +2,9 @@
 This script extracts toots from the Mastodon API and loads them to Bigquery.
 
 This script runs the following functions:
-    get_mastodon_toots - Get list of Toot objects from the Mastodon API based on a hashtag and optional keyword
-    write_toots_to_jsonl - Load Toots to a JSONL file
+    get_mastodon_toots - Get Toot objects from the Mastodon API based on a hashtag and optional keyword
+    parse_mastodon_toots - Format Toot objects as JSON and extract fields of interest
+    write_toots_to_jsonl - Load toots to a JSONL file
     create_bigquery_dataset - Create a BigQuery Dataset if it does not exist
     create_bigquery_table - Create a BigQuery Table if it does not exist
     load_jsonl_to_table - Load the BigQuery Table from the JSONL file
@@ -34,10 +35,10 @@ CONFIG.read('CONFIG.ini')
 
 # create function to get toots
 def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
-    '''Get a list of Toot objects from the Mastodon API based on a hashtag and optional keywords
+    '''Get Toot objects from the Mastodon API based on a hashtag and optional keywords
     
     Returns:
-        A list of Toot objects containing the hashtag and keywords
+        Toot objects from the Mastodon API. 
 
     Raises:
         Raises an exception if the response status code is not 200.
@@ -53,25 +54,7 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
         response: requests.models.Response = requests.get(url, data=params, headers=auth)
         response.raise_for_status() # raise exception if status code is not 200
 
-        # Convert response to JSON
-        data: dict = response.json()
-
-        class Toot():
-            # constructor
-            def __init__(self, id, url, created_at, content, acct):
-                self.id = id
-                self.url = url
-                self.created_at = created_at
-                self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
-                self.acct = acct    
-
-        # Extract Toot objects from data using a list comprehension
-        extract_toots: list[Toot] = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in data] 
-
-        # Format Toot objects as JSON using a list comprehension
-        toots: list[str] = [f'{{"id": "{toot.id}", "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in extract_toots]
-
-        return toots
+        return response
 
     # If an exception is raised, print the error message
     except ConnectionError as ce:
@@ -83,7 +66,35 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     except TooManyRedirects as tme:
         print("Too many redirects occurred:", tme)
     except RequestException as re:
-        print("An error occurred: ", re)      
+        print("An error occurred: ", re)          
+
+# parse mastodon toots to json format
+def parse_mastodon_toots():
+    '''Format Toot objects as JSON, do light text cleaning, and extract fields of interest. 
+    
+    Returns:
+    A list of Toot objects containing the hashtag and keywords
+    '''
+
+    # Convert response to JSON
+    data: dict = get_mastodon_toots(hashtag, keyword).json()
+
+    class Toot():
+        # constructor
+        def __init__(self, id, url, created_at, content, acct):
+            self.id = id
+            self.url = url
+            self.created_at = created_at
+            self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
+            self.acct = acct    
+
+    # Extract Toot objects from data using a list comprehension
+    extract_toots: list[Toot] = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in data] 
+
+    # Format Toot objects as JSON using a list comprehension
+    toots: list[str] = [f'{{"id": "{toot.id}", "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in extract_toots]
+
+    return toots
 
 # create function to put toots in jsonl file
 def write_toots_to_jsonl(filename: str):
@@ -95,7 +106,7 @@ def write_toots_to_jsonl(filename: str):
     '''    
     # write result to file
     with open(filename, "w") as f:
-        for line in get_mastodon_toots(hashtag, keyword):
+        for line in parse_mastodon_toots():
             f.write(line + "\n") 
 
     print(f"File updated: {filename}")
@@ -189,6 +200,7 @@ if __name__ == '__main__':
 
     # run functions
     get_mastodon_toots(hashtag, keyword)
+    parse_mastodon_toots()
     write_toots_to_jsonl(filename)
     create_bigquery_dataset(dataset_name)
     create_bigquery_table(table_name, dataset_name)
