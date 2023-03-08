@@ -174,9 +174,9 @@ if __name__ == '__main__':
    #finally, run functions
     get_tweets(query)
     to_file(filename, query)
-    #create_dataset(dataset_name)
-    #create_table(table_name, dataset_name)
-    #load_table(table_name, dataset_name, filename)
+    create_dataset(dataset_name)
+    create_table(table_name, dataset_name)
+    load_table(table_name, dataset_name, filename)
 
 
 

@@ -1,18 +1,19 @@
 '''
 This script extracts toots from the Mastodon API and loads them to Bigquery.
 
-This script runs the following functions
-    get_toots - Get list of Toot objects from the Mastodon API based on a hashtag and optional keyword
-    to_file - Load Toots to a JSONL file
-    create_dataset - Create a BigQuery Dataset if it does not exist
-    create_table - Create a BigQuery Table if it does not exist
-    load_table - Load the BigQuery Table from the JSONL file
+This script runs the following functions:
+    get_mastodon_toots - Get list of Toot objects from the Mastodon API based on a hashtag and optional keyword
+    write_toots_to_jsonl - Load Toots to a JSONL file
+    create_bigquery_dataset - Create a BigQuery Dataset if it does not exist
+    create_bigquery_table - Create a BigQuery Table if it does not exist
+    load_jsonl_to_table - Load the BigQuery Table from the JSONL file
 
 Last Updated: 2023-02
 '''
 
 # import packages
 import requests
+from requests.exceptions import ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
 import json
 import configparser
 import os
@@ -32,11 +33,15 @@ CONFIG: configparser.ConfigParser = configparser.ConfigParser()
 CONFIG.read('CONFIG.ini') 
 
 # create function to get toots
-def get_toots(hashtag: str, keyword: list) -> list[dict]:
+def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     '''Get a list of Toot objects from the Mastodon API based on a hashtag and optional keywords
     
     Returns:
         A list of Toot objects containing the hashtag and keywords
+
+    Raises:
+        Raises an exception if the response status code is not 200.
+        Errors raised include: ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
     '''
     
     # Make GET request to the API endpoint
@@ -44,11 +49,10 @@ def get_toots(hashtag: str, keyword: list) -> list[dict]:
     url: str = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
     params: dict = {'all':keyword, 'limit': 20}
 
-    response: requests.models.Response = requests.get(url, data=params, headers=auth)
+    try:
+        response: requests.models.Response = requests.get(url, data=params, headers=auth)
+        response.raise_for_status() # raise exception if status code is not 200
 
-    # Check the response status code
-    if response.status_code == 200:
-        
         # Convert response to JSON
         data: dict = response.json()
 
@@ -69,13 +73,21 @@ def get_toots(hashtag: str, keyword: list) -> list[dict]:
 
         return toots
 
-    # If the response fails, print the status code and reason
-    else:
-        print(f"Error: {response.status_code} - {response.reason}")
+    # If an exception is raised, print the error message
+    except ConnectionError as ce:
+        print("Error connecting to server:", ce)
+    except HTTPError as he:
+        print("HTTP error occurred:", he)
+    except Timeout as te:
+        print("Timeout error occurred:", te)
+    except TooManyRedirects as tme:
+        print("Too many redirects occurred:", tme)
+    except RequestException as re:
+        print("An error occurred: ", re)      
 
 # create function to put toots in jsonl file
-def to_file(filename: str):
-    '''Load mastodon toots to a JSONL file
+def write_toots_to_jsonl(filename: str):
+    '''Write mastodon toots to a JSONL file
     
     Args:
         filename: The name of the JSONL file to write to
@@ -83,13 +95,13 @@ def to_file(filename: str):
     '''    
     # write result to file
     with open(filename, "w") as f:
-        for line in get_toots(hashtag, keyword):
+        for line in get_mastodon_toots(hashtag, keyword):
             f.write(line + "\n") 
 
     print(f"File updated: {filename}")
 
 # Create dataset if none exists
-def create_dataset(dataset_name: str) -> bigquery.Dataset:
+def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
     '''Create the BigQuery Dataset if it does not already exist
     
     Args:
@@ -115,7 +127,7 @@ def create_dataset(dataset_name: str) -> bigquery.Dataset:
     return dataset
 
 # Create table if none exists
-def create_table(table_name: str, dataset_name: str) -> bigquery.Table:
+def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
     '''Create the BigQuery Table if it does not already exist
     
     Args:
@@ -123,7 +135,7 @@ def create_table(table_name: str, dataset_name: str) -> bigquery.Table:
         table_name: The name of the table to create
     '''
    # Construct table reference
-    dataset: bigquery.dataset.Dataset = create_dataset(dataset_name)
+    dataset: bigquery.dataset.Dataset = create_bigquery_dataset(dataset_name)
     table_id: bigquery.table.TableReference = dataset.table(table_name)
     table: bigquery.table.Table = bigquery.Table(table_id)
 
@@ -135,7 +147,7 @@ def create_table(table_name: str, dataset_name: str) -> bigquery.Table:
       print(f"Table created: {table}")
 
 # Load table from JSONL
-def load_table(table_name: str, dataset_name: str, filename: str) -> None:
+def load_jsonl_to_table(table_name: str, dataset_name: str, filename: str) -> None:
     '''Load Mastodon Toots in the JSONL file to the BigQuery Table
     
     Args:
@@ -144,7 +156,7 @@ def load_table(table_name: str, dataset_name: str, filename: str) -> None:
         filename: JSONL file containing the toots
     '''
    # Construct table reference
-    dataset = create_dataset(dataset_name)
+    dataset = create_bigquery_dataset(dataset_name)
     table_id = dataset.table(table_name)
 
    # Define table schema
@@ -168,7 +180,7 @@ if __name__ == '__main__':
 
     # Set hashtag and optional keywords to search Mastodon toots for
     hashtag: str = 'hiring'
-    keyword: list = [''] #if no keyword is desired, set an empty string
+    keyword: list = ['data'] #if no keyword is desired, set an empty string
 
     # set data landing locations
     filename: str = 'mastodon.jsonl'
@@ -176,11 +188,12 @@ if __name__ == '__main__':
     table_name: str = 'raw_mastodon_jobs'
 
     # run functions
-    get_toots(hashtag, keyword)
-    to_file(filename)
-    create_dataset(dataset_name)
-    create_table(table_name, dataset_name)
-    load_table(table_name, dataset_name, filename)
+    get_mastodon_toots(hashtag, keyword)
+    write_toots_to_jsonl(filename)
+    create_bigquery_dataset(dataset_name)
+    create_bigquery_table(table_name, dataset_name)
+    load_jsonl_to_table(table_name, dataset_name, filename)
+
 
 
 
