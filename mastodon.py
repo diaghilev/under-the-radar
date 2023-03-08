@@ -1,5 +1,5 @@
 '''
-This script extracts toots from the Mastodon API and loads them to Bigquery.
+In summary, this script extracts toots from the Mastodon API and loads them to a Bigquery table.
 
 This script runs the following functions:
     get_mastodon_toots - Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
@@ -9,15 +9,14 @@ This script runs the following functions:
     create_bigquery_table - Create a BigQuery Table if it does not exist
     load_jsonl_to_table - Load the BigQuery Table from the JSONL file
 
-Last Updated: 2023-02
+Last Updated: 2023-03
 '''
 
-# import packages
+# Import packages
+import os
+import configparser
 import requests
 from requests.exceptions import ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
-import json
-import configparser
-import os
 import time
 from bs4 import BeautifulSoup
 from google.cloud import bigquery
@@ -26,14 +25,14 @@ from google.cloud.exceptions import NotFound
 # Set google application credentials
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
 
-# construct BigQuery client object
+# Construct BigQuery client object
 CLIENT: bigquery.Client = bigquery.Client() 
 
-# create config object and read config file
+# Create config object and read config file
 CONFIG: configparser.ConfigParser = configparser.ConfigParser() 
 CONFIG.read('CONFIG.ini') 
 
-# create function to get toots
+# Create function to get toots from mastodon API
 def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     '''Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
     
@@ -68,7 +67,7 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     except RequestException as re:
         print("An error occurred: ", re)          
 
-# parse mastodon toots to json format
+# Create function to parse mastodon toots
 def parse_mastodon_toots():
     '''Extract desired fields from array of Toot objects, do light text cleaning, and format as JSON.
     
@@ -96,7 +95,7 @@ def parse_mastodon_toots():
 
     return toots
 
-# create function to put toots in jsonl file
+# Create function to put toots in jsonl file
 def write_toots_to_jsonl(filename: str):
     '''Write jsonified toots to a JSONL file.
     
@@ -104,14 +103,14 @@ def write_toots_to_jsonl(filename: str):
         filename: The name of the JSONL file to write to
         
     '''    
-    # write result to file
+    # Write result to file
     with open(filename, "w") as f:
         for line in parse_mastodon_toots():
             f.write(line + "\n") 
 
     print(f"File updated: {filename}")
 
-# Create dataset if none exists
+# Create function to create dataset if none exists
 def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
     '''Create the BigQuery Dataset if it does not already exist
     
@@ -137,7 +136,7 @@ def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
 
     return dataset
 
-# Create table if none exists
+# Create function to create table if none exists
 def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
     '''Create the BigQuery Table if it does not already exist
     
@@ -157,7 +156,7 @@ def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
       table = CLIENT.create_table(table)
       print(f"Table created: {table}")
 
-# Load table from JSONL
+# Create function to load table from JSONL
 def load_jsonl_to_table(table_name: str, dataset_name: str, filename: str) -> None:
     '''Load Mastodon Toots in the JSONL file to the BigQuery Table
     
@@ -193,12 +192,12 @@ if __name__ == '__main__':
     hashtag: str = 'hiring'
     keyword: list = ['data'] #if no keyword is desired, set an empty string
 
-    # set data landing locations
+    # Set data landing locations
     filename: str = 'mastodon.jsonl'
     dataset_name: str = 'tweets_dataset'
     table_name: str = 'raw_mastodon_jobs'
 
-    # run functions
+    # Run functions
     get_mastodon_toots(hashtag, keyword)
     parse_mastodon_toots()
     write_toots_to_jsonl(filename)
