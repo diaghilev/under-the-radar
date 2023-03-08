@@ -2,9 +2,9 @@
 This script extracts toots from the Mastodon API and loads them to Bigquery.
 
 This script runs the following functions:
-    get_mastodon_toots - Get Toot objects from the Mastodon API based on a hashtag and optional keyword
-    parse_mastodon_toots - Format Toot objects as JSON and extract fields of interest
-    write_toots_to_jsonl - Load toots to a JSONL file
+    get_mastodon_toots - Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
+    parse_mastodon_toots - Extract desired fields from array of Toot objects and format as JSON
+    write_toots_to_jsonl - Write jsonified toots to a JSONL file
     create_bigquery_dataset - Create a BigQuery Dataset if it does not exist
     create_bigquery_table - Create a BigQuery Table if it does not exist
     load_jsonl_to_table - Load the BigQuery Table from the JSONL file
@@ -35,10 +35,10 @@ CONFIG.read('CONFIG.ini')
 
 # create function to get toots
 def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
-    '''Get Toot objects from the Mastodon API based on a hashtag and optional keywords
+    '''Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
     
     Returns:
-        Toot objects from the Mastodon API. 
+        Array of Toot objects from the Mastodon API. 
 
     Raises:
         Raises an exception if the response status code is not 200.
@@ -70,10 +70,10 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
 
 # parse mastodon toots to json format
 def parse_mastodon_toots():
-    '''Format Toot objects as JSON, do light text cleaning, and extract fields of interest. 
+    '''Extract desired fields from array of Toot objects, do light text cleaning, and format as JSON.
     
     Returns:
-    A list of Toot objects containing the hashtag and keywords
+    A list of Toot objects in JSON format.
     '''
 
     # Convert response to JSON
@@ -98,7 +98,7 @@ def parse_mastodon_toots():
 
 # create function to put toots in jsonl file
 def write_toots_to_jsonl(filename: str):
-    '''Write mastodon toots to a JSONL file
+    '''Write jsonified toots to a JSONL file.
     
     Args:
         filename: The name of the JSONL file to write to
