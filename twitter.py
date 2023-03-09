@@ -1,5 +1,5 @@
 '''
-This script extracts tweets from the Twitter API and loads them to Bigquery.
+In summary, this script extracts tweets from the Twitter API and loads them to Bigquery.
 
 This script runs the following functions:
    get_tweets - Get list of Tweet objects from the Twitter API based on a search query
@@ -163,8 +163,9 @@ def load_table(table_name: str, dataset_name: str, filename: str):
 if __name__ == '__main__':
     
     # set twitter query (requires experimentation)
-    query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
-    #query = '"analytics engineer" #jobs -is:retweet'
+    #query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
+    #query = '"analytics engineer" #hiring -is:retweet'
+    query = '"data engineer" #hiring -is:retweet'
 
     # set data landing locations
     filename = 'tweets.jsonl'

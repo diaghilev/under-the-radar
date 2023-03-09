@@ -16,7 +16,6 @@ Last Updated: 2023-03
 import os
 import configparser
 import requests
-from requests.exceptions import ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
 import time
 from bs4 import BeautifulSoup
 from google.cloud import bigquery
@@ -56,19 +55,19 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
         return response
 
     # If an exception is raised, print the error message
-    except ConnectionError as ce:
+    except requests.exceptions.ConnectionError as ce:
         print("Error connecting to server:", ce)
-    except HTTPError as he:
+    except requests.exceptions.HTTPError as he:
         print("HTTP error occurred:", he)
-    except Timeout as te:
+    except requests.exceptions.Timeout as te:
         print("Timeout error occurred:", te)
-    except TooManyRedirects as tme:
+    except requests.exceptions.TooManyRedirects as tme:
         print("Too many redirects occurred:", tme)
-    except RequestException as re:
+    except requests.exceptions.RequestException as re:
         print("An error occurred: ", re)          
 
 # Create function to parse mastodon toots
-def parse_mastodon_toots():
+def parse_mastodon_toots() -> list[str]:
     '''Extract desired fields from array of Toot objects, do light text cleaning, and format as JSON.
     
     Returns:
@@ -80,7 +79,7 @@ def parse_mastodon_toots():
 
     class Toot():
         # constructor
-        def __init__(self, id, url, created_at, content, acct):
+        def __init__(self, id: int, url: str, created_at: str , content: str, acct: str):
             self.id = id
             self.url = url
             self.created_at = created_at
@@ -91,12 +90,12 @@ def parse_mastodon_toots():
     extract_toots: list[Toot] = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in data] 
 
     # Format Toot objects as JSON using a list comprehension
-    toots: list[str] = [f'{{"id": "{toot.id}", "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in extract_toots]
+    toots: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in extract_toots]
 
     return toots
 
 # Create function to put toots in jsonl file
-def write_toots_to_jsonl(filename: str):
+def write_toots_to_jsonl(filename: str) -> None:
     '''Write jsonified toots to a JSONL file.
     
     Args:
@@ -173,7 +172,7 @@ def load_jsonl_to_table(table_name: str, dataset_name: str, filename: str) -> No
     job_config = bigquery.LoadJobConfig(
       autodetect=True,
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
-      write_disposition='WRITE_TRUNCATE' # {WRITE_APPEND; WRITE_EMPTY}
+      write_disposition='WRITE_TRUNCATE' # Alternatively: {WRITE_APPEND; WRITE_EMPTY}
    )
 
    # Upload JSONL to BigQuery
@@ -198,9 +197,7 @@ if __name__ == '__main__':
     table_name: str = 'raw_mastodon_jobs'
 
     # Run functions
-    get_mastodon_toots(hashtag, keyword)
     parse_mastodon_toots()
-    write_toots_to_jsonl(filename)
     create_bigquery_dataset(dataset_name)
     create_bigquery_table(table_name, dataset_name)
     load_jsonl_to_table(table_name, dataset_name, filename)
