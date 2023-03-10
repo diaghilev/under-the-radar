@@ -1,5 +1,5 @@
 """
-In summary, this script extracts toots from the Mastodon API and loads them to a Bigquery table.
+In summary, this script extracts toots from the Mastodon API and loads them to a BigQuery table.
 
 This script runs the following functions:
     get_mastodon_toots - Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
@@ -31,7 +31,7 @@ CLIENT: bigquery.Client = bigquery.Client()
 CONFIG: configparser.ConfigParser = configparser.ConfigParser() 
 CONFIG.read('CONFIG.ini') 
 
-# Create function to get array of Toot objects from mastodon API
+# Create function to get array of Toot objects from Mastodon API
 def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     """Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
     
@@ -43,13 +43,13 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
         Errors raised include: ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
     """
     
-    # Make GET request to the API endpoint. Per Mastodon API docs, API returns an array (list) of Toot objects (dicts).
+    # Set API endpoint, parameters, and authentication
     api_auth: dict = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
     api_url: str = f'https://data-folks.masto.host//api/v1/timetines/tag/:{hashtag}' 
     api_params: dict = {'all':keyword, 'limit': 20}
 
-    try:
-        
+    try:   
+        # Make GET request to the API endpoint. API returns an array (list) of Toot objects (dicts).
         toots_response: list[dict] = requests.get(api_url, data=api_params, headers=api_auth)
         
         # Raise exception if status code is not 200
@@ -77,7 +77,7 @@ def parse_mastodon_toots(toots_response: list[dict]) -> list[str]:
     A list of Toot objects in JSON format.
     """
 
-    # Create Toot Class to hold desired fields and do light text cleaning 
+    # Create Toot Class to hold desired fields and do text cleaning 
     class TootClass():
         # constructor
         def __init__(self, id: int, url: str, created_at: str , content: str, acct: str):
@@ -87,18 +87,18 @@ def parse_mastodon_toots(toots_response: list[dict]) -> list[str]:
             self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
             self.acct = acct    
 
-    # Convert API response to JSON
+    # Convert Mastodon API response to JSON
     toots_response_json: dict = toots_response.json()
 
-    # Extract desired fields from API response using a list comprehension
+    # Extract desired fields using a list comprehension
     toots_parsed: list[TootClass] = [TootClass(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
 
-    # Format Toot objects as JSON using a list comprehension
+    # Format as JSON using a list comprehension
     toots_json: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in toots_parsed]
 
     return toots_json
 
-# Create function to put toots in jsonl file
+# Create function to put jsonified toots in jsonl file
 def write_toots_to_jsonl(toots_json: list[str], filename: str) -> None:
     """Write jsonified toots to a JSONL file.
     
@@ -106,14 +106,14 @@ def write_toots_to_jsonl(toots_json: list[str], filename: str) -> None:
         filename: The name of the JSONL file to write to
         
     """    
-    # Write result to file
+    # Write jsonified toots to file
     with open(filename, 'w') as f:
         for line in toots_json:
             f.write(line + '\n') 
 
     print(f'File updated: {filename}')
 
-# Create function to create dataset if none exists
+# Create function to create BigQuery dataset if none exists
 def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
     """Create the BigQuery Dataset if it does not already exist
     
@@ -139,7 +139,7 @@ def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
 
     return dataset
 
-# Create function to create table if none exists
+# Create function to create BigQuery table if none exists
 def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
     """Create the BigQuery Table if it does not already exist
     
@@ -147,7 +147,7 @@ def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
         dataset_name: The name of the dataset containing the table
         table_name: The name of the table to create
     """
-   # Construct table reference
+   # Construct BigQuery table reference
     dataset: bigquery.Dataset = create_bigquery_dataset(dataset_name)
     table_id: bigquery.TableReference = dataset.table(table_name)
     table: bigquery.Table = bigquery.Table(table_id)
@@ -159,7 +159,7 @@ def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
       table: bigquery.Table = CLIENT.create_table(table)
       print(f'Table created: {table}')
 
-# Create function to load table from JSONL
+# Create function to load BigQuery table from JSONL
 def load_jsonl_to_table(table_name: str, dataset_name: str, filename: str) -> None:
     """Load Mastodon Toots in the JSONL file to the BigQuery Table
     
@@ -168,18 +168,18 @@ def load_jsonl_to_table(table_name: str, dataset_name: str, filename: str) -> No
         table_name: The name of the table to create
         filename: JSONL file containing the toots
     """
-   # Construct table reference
+   # Construct BigQuery table reference
     dataset: bigquery.Dataset = create_bigquery_dataset(dataset_name)
     table_id: bigquery.Table = dataset.table(table_name)
 
-   # Define table schema
+   # Define BigQuery table schema
     job_config = bigquery.LoadJobConfig(
       autodetect=True,
       source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
       write_disposition='WRITE_TRUNCATE' # Alternatively: {WRITE_APPEND; WRITE_EMPTY}
    )
 
-   # Upload JSONL to BigQuery
+   # Upload JSONL to BigQuery table
     with open(filename, 'rb') as file:
       job = CLIENT.load_table_from_file(file, table_id, job_config=job_config)
 
@@ -191,16 +191,16 @@ def load_jsonl_to_table(table_name: str, dataset_name: str, filename: str) -> No
 
 if __name__ == '__main__':
 
-    # Set hashtag and optional keywords to search Mastodon toots for
+    # Specify search criteria by setting a hastag and optional keyword(s)
     hashtag: str = 'hiring'
     keyword: list[str] = ['data'] #if no keyword is desired, set an empty string
 
-    # Set data landing locations
+    # Set landing locations for data from the Mastodon API
     filename: str = 'mastodon.jsonl'
     dataset_name: str = 'tweets_dataset'
     table_name: str = 'raw_mastodon_jobs'
 
-    # Run functions  
+    # Run functions that extract toots from the Mastodon API, parse them, and load them to a BigQuery table
     toots_response: list[dict] = get_mastodon_toots(hashtag, keyword)   
     toots_json: list[str] = parse_mastodon_toots(toots_response)
     write_toots_to_jsonl(toots_json, filename)
