@@ -45,7 +45,7 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     
     # Make GET request to the API endpoint. Per Mastodon API docs, API returns an array (list) of Toot objects (dicts).
     api_auth: dict = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
-    api_url: str = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
+    api_url: str = f'https://data-folks.masto.host//api/v1/timetines/tag/:{hashtag}' 
     api_params: dict = {'all':keyword, 'limit': 20}
 
     try:
@@ -91,10 +91,10 @@ def parse_mastodon_toots(toots_response: list[dict]) -> list[str]:
     toots_response_json: dict = toots_response.json()
 
     # Extract desired fields from API response using a list comprehension
-    parsed_toots: list[TootClass] = [TootClass(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
+    toots_parsed: list[TootClass] = [TootClass(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
 
     # Format Toot objects as JSON using a list comprehension
-    toots_json: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in parsed_toots]
+    toots_json: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in toots_parsed]
 
     return toots_json
 
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     # Set hashtag and optional keywords to search Mastodon toots for
     hashtag: str = 'hiring'
-    keyword: list = ['data'] #if no keyword is desired, set an empty string
+    keyword: list[str] = ['data'] #if no keyword is desired, set an empty string
 
     # Set data landing locations
     filename: str = 'mastodon.jsonl'
