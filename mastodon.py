@@ -31,6 +31,16 @@ CLIENT: bigquery.Client = bigquery.Client()
 CONFIG: configparser.ConfigParser = configparser.ConfigParser() 
 CONFIG.read('CONFIG.ini') 
 
+# Create Toot class to process Toot objects from the Mastodon API. Specifically, we will extract desired fields and clean text.
+class Toots():
+    # constructor
+    def __init__(self, id: int, url: str, created_at: str , content: str, acct: str):
+        self.id = id
+        self.url = url
+        self.created_at = created_at
+        self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
+        self.acct = acct 
+
 # Create function to get array of Toot objects from Mastodon API
 def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     """Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
@@ -45,7 +55,7 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     
     # Set API endpoint, parameters, and authentication
     api_auth: dict = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
-    api_url: str = f'https://data-folks.masto.host//api/v1/timetines/tag/:{hashtag}' 
+    api_url: str = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
     api_params: dict = {'all':keyword, 'limit': 20}
 
     try:   
@@ -75,23 +85,13 @@ def parse_mastodon_toots(toots_response: list[dict]) -> list[str]:
     
     Returns:
     A list of Toot objects in JSON format.
-    """
-
-    # Create Toot Class to hold desired fields and do text cleaning 
-    class TootClass():
-        # constructor
-        def __init__(self, id: int, url: str, created_at: str , content: str, acct: str):
-            self.id = id
-            self.url = url
-            self.created_at = created_at
-            self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
-            self.acct = acct    
+    """   
 
     # Convert Mastodon API response to JSON
     toots_response_json: dict = toots_response.json()
 
     # Extract desired fields using a list comprehension
-    toots_parsed: list[TootClass] = [TootClass(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
+    toots_parsed: list[Toots] = [Toots(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
 
     # Format as JSON using a list comprehension
     toots_json: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in toots_parsed]
@@ -201,8 +201,8 @@ if __name__ == '__main__':
     table_name: str = 'raw_mastodon_jobs'
 
     # Run functions that extract toots from the Mastodon API, parse them, and load them to a BigQuery table
-    toots_response: list[dict] = get_mastodon_toots(hashtag, keyword)   
-    toots_json: list[str] = parse_mastodon_toots(toots_response)
+    toots_response = get_mastodon_toots(hashtag, keyword) #list[dict]  
+    toots_json = parse_mastodon_toots(toots_response) #list[str]
     write_toots_to_jsonl(toots_json, filename)
     create_bigquery_dataset(dataset_name)
     create_bigquery_table(table_name, dataset_name)
