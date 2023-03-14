@@ -1,4 +1,4 @@
-'''
+"""
 In summary, this script extracts tweets from the Twitter API and loads them to Bigquery.
 
 This script runs the following functions:
@@ -9,7 +9,7 @@ This script runs the following functions:
    load_table - Load the BigQuery Table from the JSONL file
 
 Last Updated: 2023-02
-'''
+"""
 
 # import packages
 import tweepy
@@ -22,21 +22,21 @@ from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 
 # Set google application credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/laurenkaye/PycharmProjects/tweets/apikey.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']='/Users/laurenkaye/PycharmProjects/tweets/apikey.json'
 
 # Construct BigQuery client object
 CLIENT = bigquery.Client() 
 
 # create function to get tweets
 def get_tweets(query: str) -> list[dict]:
-   '''Get a list of Tweet objects from the Twitter API
+   """Get a list of Tweet objects from the Twitter API
     
    Args:
         query: The search query to use to get tweets
 
    Returns:
         A list of Tweet objects, which are not yet processed
-   '''
+   """
    # read configs
    config = configparser.ConfigParser()
    config.read('config.ini')
@@ -65,14 +65,14 @@ def get_tweets(query: str) -> list[dict]:
    return tweets_raw
 
 # create function to put tweets in jsonl file 
-def to_file(filename: str, query: str):
-   '''Load Tweet objects to a JSONL file
+def to_file(filename: str, query: str) -> None:
+   """Load Tweet objects to a JSONL file
     
    Args:
         filename: The name of the JSONL file to write to
         query: The search query to use to get tweets
             
-   ''' 
+   """ 
    # convert tweets to dictionary and remove metadata
    tweets_raw = get_tweets(query) #datatype <class 'requests.models.Response'>
    tweets_dict = tweets_raw.json() #datatype <class 'dict'>
@@ -87,14 +87,14 @@ def to_file(filename: str, query: str):
 
 # Create dataset if none exists
 def create_dataset(dataset_name: str) -> bigquery.Dataset:
-   '''Create the BigQuery Dataset if it does not already exist
+   """Create the BigQuery Dataset if it does not already exist
     
     Args:
         dataset_name: The name of the dataset to create
         
     Returns:
         A Dataset Object
-    '''
+    """
    # Set dataset_id to the ID of the dataset to create.
    dataset_id = f"{CLIENT.project}.{dataset_name}"
 
@@ -113,12 +113,12 @@ def create_dataset(dataset_name: str) -> bigquery.Dataset:
 
 # Create table if none exists
 def create_table(table_name: str, dataset_name: str):
-   '''Create the BigQuery Table if it does not already exist
+   """Create the BigQuery Table if it does not already exist
     
     Args:
         table_name: The name of the table to create
         dataset_name: The name of the dataset containing the table
-   '''
+   """
    # Construct table reference
    dataset = create_dataset(dataset_name)
    table_id = dataset.table(table_name)
@@ -133,13 +133,13 @@ def create_table(table_name: str, dataset_name: str):
 
 # Load table from JSONL
 def load_table(table_name: str, dataset_name: str, filename: str):
-   '''Load Tweets in the JSONL file to the BigQuery Table
+   """Load Tweets in the JSONL file to the BigQuery Table
     
     Args:
         dataset_name: The name of the dataset containing the table
         table_name: The name of the table to create
         filename: JSONL file containing the tweets
-    '''
+    """
    # Construct table reference
    dataset = create_dataset(dataset_name)
    table_id = dataset.table(table_name)
@@ -164,8 +164,8 @@ if __name__ == '__main__':
     
     # set twitter query (requires experimentation)
     #query = '("BI developer" OR "BI engineer" OR "ETL" OR "ELT" OR "data engineer" -senior -lead -sr OR "Business Intelligence" OR Analytics) (interim OR #interim OR contractor OR #contractor OR contract OR #contract OR freelance OR #freelance OR #freelancer OR parttime OR part-time OR "part time" OR #parttime OR #part-time OR flexible OR #flexible OR months OR hours) (context:131.1197909704803901440 OR #hiring) -is:retweet'
-    #query = '"analytics engineer" #hiring -is:retweet'
-    query = '"data engineer" #hiring -is:retweet'
+    query = '"analytics engineer" #hiring -is:retweet'
+  
 
     # set data landing locations
     filename = 'tweets.jsonl'
