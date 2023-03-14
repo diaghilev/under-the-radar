@@ -23,3 +23,6 @@ venv/
 test.py
 tweets_200.jsonl 
 tweets_parttime.jsonl 
+
+# Docker - Only temporary
+Dockerfile
