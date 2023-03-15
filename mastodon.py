@@ -3,7 +3,8 @@ In summary, this script extracts toots from the Mastodon API and loads them to a
 
 This script runs the following functions:
     get_mastodon_toots - Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
-    parse_mastodon_toots - Extract desired fields from array of Toot objects and format as JSON
+    parse_mastodon_toots - Extract desired fields from array of Toot objects
+    convert_mastodon_toots_to_json - Convert parsed toots to JSON
     write_toots_to_jsonl - Write jsonified toots to a JSONL file
     create_bigquery_dataset - Create a BigQuery Dataset if it does not exist
     create_bigquery_table - Create a BigQuery Table if it does not exist
@@ -32,16 +33,16 @@ CONFIG: configparser.ConfigParser = configparser.ConfigParser()
 CONFIG.read('CONFIG.ini') 
 
 # Create Toot class to process Toot objects from the Mastodon API. Specifically, we will extract desired fields and clean text.
-class Toots():
+class Toot():
     # constructor
-    def __init__(self, id: int, url: str, created_at: str , content: str, acct: str):
+    def __init__(self, id: str, url: str, created_at: str , content: str, acct: str):
         self.id = id
         self.url = url
         self.created_at = created_at
         self.content = BeautifulSoup(content,'html.parser').get_text().replace('"','\\"') #remove html tags and escape double quotes
         self.acct = acct 
 
-# Create function to get array of Toot objects from Mastodon API
+# Create function to get array (list) of Toot objects (dicts) from Mastodon API
 def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     """Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
     
@@ -52,7 +53,6 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
         Raises an exception if the response status code is not 200.
         Errors raised include: ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
     """
-    
     # Set API endpoint, parameters, and authentication
     api_auth: dict = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
     api_url: str = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
@@ -80,19 +80,26 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
         print('An error occurred: ', re)          
 
 # Create function to parse array of Toot objects from the Mastodon API
-def parse_mastodon_toots(toots_response: list[dict]) -> list[str]:
-    """Extract desired fields from array of Toot objects, do light text cleaning, and format as JSON.
+def parse_mastodon_toots(toots_response: list[dict]) -> list[Toot]:
+    """Extract desired fields from array of Toot objects.
     
     Returns:
-    A list of Toot objects in JSON format.
+    A parsed list of Toot objects.
     """   
-
     # Convert Mastodon API response to JSON
     toots_response_json: dict = toots_response.json()
 
     # Extract desired fields using a list comprehension
-    toots_parsed: list[Toots] = [Toots(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
+    toots_parsed: list[Toot] = [Toot(idx['id'], idx['url'], idx['created_at'], idx['content'], idx['account']['acct']) for idx in toots_response_json] 
 
+    return toots_parsed
+
+def convert_mastodon_toots_to_json(toots_parsed: list[Toot]) -> list[str]:
+    """Convert parsed toots to JSON.   
+    
+    Returns:
+    A list of Toot objects in JSON format.
+    """ 
     # Format as JSON using a list comprehension
     toots_json: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in toots_parsed]
 
@@ -103,8 +110,7 @@ def write_toots_to_jsonl(toots_json: list[str], filename: str) -> None:
     """Write jsonified toots to a JSONL file.
     
     Args:
-        filename: The name of the JSONL file to write to
-        
+        filename: The name of the JSONL file to write to    
     """    
     # Write jsonified toots to file
     with open(filename, 'w') as f:
@@ -202,7 +208,8 @@ if __name__ == '__main__':
 
     # Run functions that extract toots from the Mastodon API, parse them, and load them to a BigQuery table
     toots_response = get_mastodon_toots(hashtag, keyword) #list[dict]  
-    toots_json = parse_mastodon_toots(toots_response) #list[str]
+    toots_parsed = parse_mastodon_toots(toots_response) #list[Toot]
+    toots_json = convert_mastodon_toots_to_json(toots_parsed) #list[str]
     write_toots_to_jsonl(toots_json, filename)
     create_bigquery_dataset(dataset_name)
     create_bigquery_table(table_name, dataset_name)
