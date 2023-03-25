@@ -19,7 +19,8 @@ slack_exclude_replies AS (
     thread_ts,
     ts,
     workspace,
-    CASE WHEN thread_ts = ts THEN 'no' ELSE 'yes' END is_reply 
+    CASE WHEN thread_ts = ts 
+      OR thread_ts IS NULL THEN 'no' ELSE 'yes' END is_reply 
   FROM src_slack_jobs
 ),
 
