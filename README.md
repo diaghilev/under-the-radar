@@ -34,7 +34,7 @@ Can we tap into social communities to find jobs in a more systematic way? This p
 - [x] **Reporting** - Looker Studio lists job announcements with filters for part-time, contract and remote positions.
 - [ ] **Deployment** - Docker to containerize the pipeline.
 
-[^1]: If the Twitter API goes behind a paywall, that source will be paused and I'll find an alternate solution.
+[^1]: Recent results from the Twitter API show a trend towards automated job accounts and away from human users. So I am experimenting with a very narrow query that will reduce results from this source.
 ### Transformation
 
 
