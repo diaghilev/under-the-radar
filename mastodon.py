@@ -4,7 +4,7 @@ In summary, this script extracts toots from the Mastodon API and loads them to a
 This script runs the following functions:
     get_mastodon_toots - Get array of Toot objects from the Mastodon API based on a hashtag and optional keyword
     parse_mastodon_toots - Extract desired fields from array of Toot objects
-    convert_mastodon_toots_to_json - Convert parsed toots to JSON
+    convert_mastodon_toots_to_json - Convert parsed toots to JSON format
     write_toots_to_jsonl - Write jsonified toots to a JSONL file
     create_bigquery_dataset - Create a BigQuery Dataset if it does not exist
     create_bigquery_table - Create a BigQuery Table if it does not exist
@@ -32,7 +32,7 @@ CLIENT: bigquery.Client = bigquery.Client()
 CONFIG: configparser.ConfigParser = configparser.ConfigParser() 
 CONFIG.read('CONFIG.ini') 
 
-# Create Toot class to process Toot objects from the Mastodon API. Specifically, we will extract desired fields and clean text.
+# Create Toot class to process Toot objects from the Mastodon API.
 class Toot():
     # constructor
     def __init__(self, id: str, url: str, created_at: str , content: str, acct: str):
@@ -53,13 +53,15 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
         Raises an exception if the response status code is not 200.
         Errors raised include: ConnectionError, HTTPError, Timeout, TooManyRedirects, RequestException
     """
-    # Set API endpoint, parameters, and authentication
+    # Set API authentication, endpoint, and parameters
     api_auth: dict = {'Authorization': f"Bearer {CONFIG['mastodon']['user_key']}"} 
     api_url: str = f'https://data-folks.masto.host//api/v1/timelines/tag/:{hashtag}' 
     api_params: dict = {'all':keyword, 'limit': 20}
 
-    try:   
-        # Make GET request to the API endpoint. API returns an array (list) of Toot objects (dicts).
+    # Make GET request to the API endpoint. 
+    try: 
+        
+        # GET request returns an array (list) of Toot objects (dicts)  
         toots_response: list[dict] = requests.get(api_url, data=api_params, headers=api_auth)
         
         # Raise exception if status code is not 200
@@ -79,7 +81,7 @@ def get_mastodon_toots(hashtag: str, keyword: list) -> list[dict]:
     except requests.exceptions.RequestException as re:
         print('An error occurred: ', re)          
 
-# Create function to parse array of Toot objects from the Mastodon API
+# Create function to extract desired fields from array of Toot objects
 def parse_mastodon_toots(toots_response: list[dict]) -> list[Toot]:
     """Extract desired fields from array of Toot objects.
     
@@ -94,18 +96,19 @@ def parse_mastodon_toots(toots_response: list[dict]) -> list[Toot]:
 
     return toots_parsed
 
+# Create function to convert parsed toots to JSON format
 def convert_mastodon_toots_to_json(toots_parsed: list[Toot]) -> list[str]:
-    """Convert parsed toots to JSON.   
+    """Convert parsed toots to JSON format.   
     
     Returns:
-    A list of Toot objects in JSON format.
+    A list of Toot strings in JSON format.
     """ 
     # Format as JSON using a list comprehension
     toots_json: list[str] = [f'{{"id": {toot.id}, "url": "{toot.url}", "created_at": "{toot.created_at}", "content": "{toot.content}", "acct": "{toot.acct}"}}' for toot in toots_parsed]
 
     return toots_json
 
-# Create function to put jsonified toots in jsonl file
+# Create function to write jsonified toots to jsonl file
 def write_toots_to_jsonl(toots_json: list[str], filename: str) -> None:
     """Write jsonified toots to a JSONL file.
     
@@ -121,7 +124,7 @@ def write_toots_to_jsonl(toots_json: list[str], filename: str) -> None:
 
 # Create function to create BigQuery dataset if none exists
 def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
-    """Create the BigQuery Dataset if it does not already exist
+    """Create a BigQuery Dataset if it does not already exist
     
     Args:
         dataset_name: The name of the dataset to create
@@ -147,7 +150,7 @@ def create_bigquery_dataset(dataset_name: str) -> bigquery.Dataset:
 
 # Create function to create BigQuery table if none exists
 def create_bigquery_table(table_name: str, dataset_name: str) -> bigquery.Table:
-    """Create the BigQuery Table if it does not already exist
+    """Create a BigQuery Table if it does not already exist
     
     Args:
         dataset_name: The name of the dataset containing the table
