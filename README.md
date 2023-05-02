@@ -59,7 +59,7 @@ Tests
 
 ### Reporting
 
-My primary objective is to generate a list of 'under the radar' job announcements [here](https://lookerstudio.google.com/u/0/reporting/8c81c373-e150-47ec-8479-932fb48ebaf8/page/tEnnC/edit) (first pass).
+My primary objective is to generate a list of 'under the radar' job announcements.
 
 ![Image](img/lookerstudio.png)
 
