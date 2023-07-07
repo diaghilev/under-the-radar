@@ -3,6 +3,7 @@ config.ini
 
 # Google Application Credentials file
 apikey.json
+apikey_deprecated.json
 
 # Bigquery - dbt Credentials file
 dbt_bq_serviceaccount.json
@@ -18,6 +19,9 @@ venv/
 
 # macOS
 .DS_Store
+
+# Deprecated
+deprecated/
 
 # Other test files
 test.py

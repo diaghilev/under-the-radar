@@ -206,7 +206,7 @@ if __name__ == '__main__':
 
     # Set landing locations for data from the Mastodon API
     filename: str = 'mastodon.jsonl'
-    dataset_name: str = 'tweets_dataset'
+    dataset_name: str = 'utr_dataset'
     table_name: str = 'raw_mastodon_jobs'
 
     # Run functions that extract toots from the Mastodon API, parse them, and load them to a BigQuery table
