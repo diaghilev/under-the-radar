@@ -169,12 +169,12 @@ if __name__ == '__main__':
 
     # Set landing locations for data from the Twitter API
     filename: str = 'tweets.jsonl'
-    dataset_name: str = 'tweets_dataset' 
+    dataset_name: str = 'utr_dataset' 
     table_name: str = 'raw_twitter_jobs'
 
    # Run functions that extract tweets from the Twitter API and loads them to Bigquery
-    get_tweets(query)
-    write_tweets_to_jsonl(filename, query)
+    #get_tweets(query)
+    #write_tweets_to_jsonl(filename, query)
     create_bigquery_dataset(dataset_name)
     create_bigquery_table(table_name, dataset_name)
     load_jsonl_to_table(table_name, dataset_name, filename)

@@ -39,7 +39,7 @@ SELECT
   slack_id as job_id,
   slack_text as job_text,
   CONCAT('Slack - ', workspace) as source,
-  timestamp as timestamp
+  timestamp
 FROM slack_exclude_replies
 WHERE is_reply = 'no'
 UNION ALL
@@ -47,7 +47,7 @@ SELECT
   tweet_id as job_id,
   tweet_text as job_text,
   'Twitter' as source,
-  timestamp as timestamp
+  timestamp
 FROM twitter_exclude_dupes
 WHERE row_num = 1
 UNION ALL
@@ -55,6 +55,6 @@ SELECT
   mastodon_id as job_id,
   mastodon_text as job_text,
   'Mastodon' as source,
-  timestamp as timestamp
+  timestamp
 FROM src_mastodon_jobs
 

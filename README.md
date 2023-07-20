@@ -59,7 +59,7 @@ Tests
 
 ### Reporting
 
-My primary objective is to generate a list of 'under the radar' job announcements.
+My primary objective is to generate a filterable list of 'under the radar' job announcements that could be used for job searching.
 
 ![Image](img/lookerstudio.png)
 
