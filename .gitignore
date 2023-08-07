@@ -3,12 +3,14 @@ config.ini
 
 # Google Application Credentials file
 apikey.json
-apikey_deprecated.json
 
-# Bigquery - dbt Credentials file
+# Bigquery - dbt Credentials files
 dbt_bq_serviceaccount.json
 under_the_radar_dbt/dbt_bq_serviceaccount.json
 dbt/dbt_bq_serviceaccount.json
+
+# Twitter files to ignore post API paywall
+twitter.jsonl
 
 # Environment
 venv/
@@ -22,11 +24,6 @@ venv/
 
 # Deprecated
 deprecated/
-
-# Other test files
-test.py
-tweets_200.jsonl 
-tweets_parttime.jsonl 
 
 # Docker - Only temporary
 Dockerfile
