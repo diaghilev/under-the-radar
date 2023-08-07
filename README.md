@@ -27,14 +27,14 @@ Can we tap into social communities to find jobs in a more systematic way? This p
 
 - [x] **Ingestion** 
     - [x] Python script fetches posts from the Mastodon API and loads to a JSONL file.
-    - [x] Python script fetches tweets from the Twitter API and loads to a JSONL file.[^1]
     - [x] Zapier automation fetches data from several Slack #job channels and loads to a Google Sheet
+    - [x] Python script fetches tweets from the Twitter API and loads to a JSONL file.[^1]
 - [x] **Storage** - Python script generates a dataset + tables in BigQuery and loads ingested data there.
 - [x] **Transformation** - dbt transforms source tables, preparing them for a filterable reporting layer.
 - [x] **Reporting** - Looker Studio lists job announcements with filters for part-time, contract and remote positions.
 - [ ] **Deployment** - Docker to containerize the pipeline.
 
-[^1]: Recent results from the Twitter API show a trend towards automated job accounts and away from human users. So I am experimenting with a very narrow query that will reduce results from this source.
+[^1]: The Twitter API is now behind a paywall, so this data source is no longer updating as of July 1 2023.
 ### Transformation
 
 
@@ -59,12 +59,12 @@ Tests
 
 ### Reporting
 
-My primary objective is to generate a filterable list of 'under the radar' job announcements that could be used for job searching.
+My primary objective is to generate a filterable list of 'under the radar' job announcements. Link [here] (https://lookerstudio.google.com/reporting/ebbccc3f-9c80-40ed-9928-0ee8e7922adf/page/tEnnC)!
 
 ![Image](img/lookerstudio.png)
 
 
-But I also have a few questions, which will be answered over time in the [wkly_metrics](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/mart/wkly_metrics.sql) table:
+I also have a few questions, which will be answered over time in the [wkly_metrics](https://github.com/diaghilev/under-the-radar/blob/main/dbt/models/mart/wkly_metrics.sql) table:
 - [x] In our sample, do we see an RTO trend in the form of decreasing remote jobs over time?
 - [x] In our sample, is there an increase in contract jobs (relative to all jobs) during this economic downturn?
 - [x] In our sample, is there an increase in parttime jobs (relative to all jobs) during this economic downturn?
