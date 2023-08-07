@@ -8,7 +8,7 @@ This script runs the following functions:
    create_bigquery_table - Create a BigQuery Table if it does not exist
    load_jsonl_to_table - Load the BigQuery Table from the JSONL file
 
-Last Updated: 2023-03
+THIS SCRIPT IS CURRENTLY NOT IN USE: As of Summer 2023, this script is no longer being used to pull data from the Twitter API, due to a new paywall.
 """
 
 # import packages
