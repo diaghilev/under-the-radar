@@ -54,7 +54,6 @@ Key transformations performed in [dim_jobs model](https://github.com/diaghilev/u
 
 Tests
 - [x] Unique and Not Null tests for all primary keys
-- [ ] Additional tests coming later
 
 
 ### Reporting
